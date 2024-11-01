@@ -28,7 +28,7 @@ export default App
 //port: 5005
 
 // TODO: 
-// Need to set up different folders, also remember to npm install. 
+// also remember to npm install for new packages. 
 // set up linting, test comes last. 
 
 
