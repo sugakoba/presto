@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
+import { BrowserRouter } from 'react-router-dom';
+import MainApp from './Router';
 
 function App() {
-  const [count, setCount] = useState(0);
-
   
   return (
     <>
       <BrowserRouter>
-        <Router />
+        <MainApp />
       </BrowserRouter>
     </>
   )
@@ -33,5 +33,6 @@ export default App
 
 
 //If there is a library exists go use it. 
-//Hayden Lecture from 1 hour 30mins focuses on dashboard. 
+//Hayden week 8 Lecture from 1 hour 30mins till the end focuses on dashboard, 
+//VERY USEFUl, only 15mins long.
 
