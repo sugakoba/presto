@@ -31,7 +31,7 @@ export default App
 //port: 5005
 
 // TODO: 
-// also remember to npm install for new packages. 
+// Make error pop up and welcome page more beautiful. 
 // set up linting, test comes last. 
 
 

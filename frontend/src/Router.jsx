@@ -7,8 +7,8 @@ import Dashboard from './page/Dashboard';
 
 function MainApp() {
 
-
     const [token, setToken] = useState(localStorage.getItem('token'));
+
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -23,9 +23,8 @@ function MainApp() {
             navigate('/dashboard');
         }
 
-        //Maybe need to change to welcome page here. 
         if (!token && !(['/login', '/register']).includes(location.pathname)) {
-            navigate('/')
+            navigate('/welcome')
         }
     }, [token, location.pathname]);
 
@@ -36,7 +35,7 @@ function MainApp() {
         <>
             <Routes>
                 <Route path="/" element={<Welcome token={token} />} />
-                {/* <Route path="/welcome" element={<Welcome/> }/> */}
+                <Route path="/welcome" element={<Welcome/> }/>
                 <Route path="/register" element={<Register token={token} handleSuccess={handleNewToken} />} />
                 <Route path="/login" element={<Login token={token} handleSuccess={handleNewToken}/>} />
                 <Route path="/dashboard" element={<Dashboard token={token}/>}/>

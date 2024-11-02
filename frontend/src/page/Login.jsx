@@ -1,33 +1,53 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import { styled } from '@mui/material/styles';
 import { Box, Button, TextField, Typography } from "@mui/material";
+import ErrorPopUp from "../component/ErrorPopUp";
+
+const BackgroundContainer = styled(Box)`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    // margin: 0px;
+    // padding: 0px;
+    // overflow: hidden;
+`;
+
+const LoginContainer = styled(Box)`
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    width: 400px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+`;
 
 
 function Login({ token, handleSuccess }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isErrorOpen, setErrorOpen] = useState(false);
+    const[errorMsg, setErrorMsg] = useState('');
+
+    const openError = () => {
+        setErrorOpen(true);
+    };
+
+    const closeError = () => {
+        setErrorOpen(false);
+    }
+
 
     const navigate = useNavigate();
-
-    const BackgroundContainer = styled(Box)`
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background-color: #f0f0f0;
-    `;
-
-    const LoginContainer = styled(Box)`
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border: 1px solid #ddd;
-        width: 300px;
-        display: flex;
-        flex-direction: column;
-    `;
 
     const login = () => {
         axios.post('http://localhost:5005/admin/auth/login', {
@@ -38,9 +58,28 @@ function Login({ token, handleSuccess }) {
             handleSuccess(response.data.token);
         }) 
         .catch(function (error) {
-            alert(error.response.data.error);
+            setErrorMsg(error.response.data.error);
+            setErrorOpen(true);
         });
     }
+
+    const enterKey = (event) => {
+        if (event.key === 'Enter') {
+            login();
+        }
+    }
+
+    const handleCloseError = () => {
+        setErrorOpen(false);
+    }
+
+    useEffect(() => {
+        window.addEventListener('keydown', enterKey);
+
+        return () => {
+            window.removeEventListener('keydown', enterKey);
+        }
+    }, []);
 
 
     return (
@@ -57,6 +96,7 @@ function Login({ token, handleSuccess }) {
                         type="email"
                         value={email}
                         onChange={e => setEmail(e.target.value)}
+                        style={{ width: '80%' }}
                     />
 
                     <TextField 
@@ -65,18 +105,25 @@ function Login({ token, handleSuccess }) {
                         type="password"
                         value={password}
                         onChange={e => setPassword(e.target.value)} 
+                        style={{ width: '80%' }}
                     />
 
                     <Button 
                         variant="contained"
                         color="primary"
-                        onClick={login}    
+                        onClick={login}
+                        style={{ width: '80%' }}
                     >
                         Login
                     </Button>
                 </LoginContainer>
 
             </BackgroundContainer>
+
+            <ErrorPopUp isOpen={isErrorOpen} onClose={handleCloseError} message = {errorMsg}>
+
+            </ErrorPopUp>
+
         </>
     )
 }
