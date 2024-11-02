@@ -3,14 +3,17 @@ import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import { BrowserRouter } from 'react-router-dom';
 import MainApp from './Router';
+import CssBaseline from '@mui/material/CssBaseline';
 
 function App() {
   
   return (
     <>
-      <BrowserRouter>
-        <MainApp />
-      </BrowserRouter>
+      <CssBaseline>
+        <BrowserRouter>
+          <MainApp />
+        </BrowserRouter>
+      </CssBaseline>
     </>
   )
 }
