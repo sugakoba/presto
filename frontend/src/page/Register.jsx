@@ -101,7 +101,7 @@ function Register({ token, handleSuccess }) {
                             value={email}
                             onChange={e => setEmail(e.target.value)}
                             style={{ width: '80%' }}
-                        />
+                    />
 
                     <TextField 
                         label="Password"
