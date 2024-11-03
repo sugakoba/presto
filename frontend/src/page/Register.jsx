@@ -13,7 +13,7 @@ const BackgroundContainer = styled(Box)`
     background-color: #f0f0f0;
 `;
 
-const LoginContainer = styled(Box)`
+const RegisterContainer = styled(Box)`
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -42,14 +42,100 @@ const BackButton = styled(Button) `
 function Register({ token, handleSuccess }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [name, setName] = useState('');
     const [isErrorOpen, setErrorOpen] = useState(false);
     const[errorMsg, setErrorMsg] = useState('');
 
     const navigate = useNavigate();
 
+    const register = () => {
+        if (password === confirmPassword) {
+            axios.post('http://localhost:5005/admin/auth/register', {
+                email: email,
+                password: password,
+                name: name,
+            }).then(function (response) {
+                handleSuccess(response.data.token);
+            }).catch(function (error) {
+                setErrorMsg(error.response.data.error);
+                setErrorOpen(true);
+            })
+        } else {
+            setErrorMsg('Password does not match confirm Password')
+            setErrorOpen(true);
+        }
+    }
+
+    const enterKey = (event) => {
+        if (event.key === 'Enter') {
+            register();
+        }
+    }
+
+    
+    const handleCloseError = () => {
+        setErrorOpen(false);
+    }
+
+    useEffect(() => {
+        window.addEventListener('keydown', enterKey);
+
+        return () => {
+            window.removeEventListener('keydown', enterKey);
+        }
+    }, []);
+
     return (
         <>
-            <h2>Register:</h2>
+            <BackgroundContainer>
+                <RegisterContainer>
+                    <Typography variant="h4" component="h1" align="center">
+                            Register
+                    </Typography>
+
+                    <TextField 
+                            label="Email"
+                            variant="outlined"
+                            type="email"
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                            style={{ width: '80%' }}
+                        />
+
+                    <TextField 
+                        label="Password"
+                        variant="outlined"
+                        type="password"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)} 
+                        style={{ width: '80%' }}
+                    />
+
+                    <TextField 
+                        label="Confirm Password"
+                        variant="outlined"
+                        type="password"
+                        value={confirmPassword}
+                        onChange={e => setConfirmPassword(e.target.value)}
+                        style={{ width: '80%' }}
+                    />
+
+                    <Button 
+                        variant="contained"
+                        color="primary"
+                        onClick={register}
+                        style={{ width: '80%' }}
+                    >
+                        Register
+                    </Button>
+
+                    <BackButton onClick={() => navigate('/welcome')}>Back</BackButton>
+                </RegisterContainer>
+            </BackgroundContainer>
+
+            <ErrorPopUp isOpen={isErrorOpen} onClose={handleCloseError} message = {errorMsg}>
+            </ErrorPopUp>
         </>
     )
 }
