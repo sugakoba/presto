@@ -49,6 +49,12 @@ function Login({ token, handleSuccess }) {
     const navigate = useNavigate();
 
     const login = () => {
+        if (!email || !password) {
+            setErrorMsg("Email and password can't be empty.");
+            setErrorOpen(true);
+            return;
+        }
+
         axios.post('http://localhost:5005/admin/auth/login', {
             email: email,
             password: password,
@@ -78,7 +84,7 @@ function Login({ token, handleSuccess }) {
         return () => {
             window.removeEventListener('keydown', enterKey);
         }
-    }, []);
+    }, [email, password]);
 
 
     return (

@@ -50,6 +50,12 @@ function Register({ token, handleSuccess }) {
     const navigate = useNavigate();
 
     const register = () => {
+        if (!email || !password) {
+            setErrorMsg("Email and password can't be empty.");
+            setErrorOpen(true);
+            return;
+        }
+
         if (password === confirmPassword) {
             axios.post('http://localhost:5005/admin/auth/register', {
                 email: email,
@@ -84,7 +90,7 @@ function Register({ token, handleSuccess }) {
         return () => {
             window.removeEventListener('keydown', enterKey);
         }
-    }, []);
+    }, [email, password]);
 
     return (
         <>
