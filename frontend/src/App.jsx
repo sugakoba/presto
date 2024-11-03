@@ -31,7 +31,7 @@ export default App
 //port: 5005
 
 // TODO: 
-// Make error pop up and welcome page more beautiful. 
+// error pop up, register page.
 // set up linting, test comes last. 
 
 

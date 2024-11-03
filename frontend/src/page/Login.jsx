@@ -11,9 +11,6 @@ const BackgroundContainer = styled(Box)`
     align-items: center;
     height: 100vh;
     background-color: #f0f0f0;
-    // margin: 0px;
-    // padding: 0px;
-    // overflow: hidden;
 `;
 
 const LoginContainer = styled(Box)`
@@ -29,6 +26,17 @@ const LoginContainer = styled(Box)`
     justify-content: center;
     gap: 20px;
     padding: 20px;
+    position: relative;
+`;
+
+const BackButton = styled(Button) `
+    background-color: blue;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
 `;
 
 
@@ -37,15 +45,6 @@ function Login({ token, handleSuccess }) {
     const [password, setPassword] = useState('');
     const [isErrorOpen, setErrorOpen] = useState(false);
     const[errorMsg, setErrorMsg] = useState('');
-
-    const openError = () => {
-        setErrorOpen(true);
-    };
-
-    const closeError = () => {
-        setErrorOpen(false);
-    }
-
 
     const navigate = useNavigate();
 
@@ -86,6 +85,7 @@ function Login({ token, handleSuccess }) {
         <>
             <BackgroundContainer>
                 <LoginContainer>
+
                     <Typography variant="h4" component="h1" align="center">
                         Login
                     </Typography>
@@ -116,6 +116,8 @@ function Login({ token, handleSuccess }) {
                     >
                         Login
                     </Button>
+
+                    <BackButton onClick={() => navigate('/welcome')}>Back</BackButton>
                 </LoginContainer>
 
             </BackgroundContainer>

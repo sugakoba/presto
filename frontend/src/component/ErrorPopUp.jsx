@@ -19,10 +19,14 @@ const ErrorContent = styled.div`
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     position: relative;
-    width: 400px
+    width: 300px;
 `;
 
 const CloseButton = styled.button`
+    background-color: blue;
+    color: white;
+    border: none;
+    border-radius: 4px;
     position: absolute;
     top: 10px;
     right: 10px;
