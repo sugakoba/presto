@@ -123,7 +123,6 @@ function Login({ token, handleSuccess }) {
             </BackgroundContainer>
 
             <ErrorPopUp isOpen={isErrorOpen} onClose={handleCloseError} message = {errorMsg}>
-
             </ErrorPopUp>
 
         </>
