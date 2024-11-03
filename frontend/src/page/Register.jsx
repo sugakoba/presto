@@ -90,7 +90,7 @@ function Register({ token, handleSuccess }) {
         return () => {
             window.removeEventListener('keydown', enterKey);
         }
-    }, [email, password]);
+    }, [email, password, confirmPassword]);
 
     return (
         <>
