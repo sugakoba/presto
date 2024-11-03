@@ -10,6 +10,9 @@ export default defineConfig({
     setupFiles: './src/setup.js',
   },
   server: {
+    watch: {
+      usePolling: true,
+    },
     port: 3000,
   },
 })

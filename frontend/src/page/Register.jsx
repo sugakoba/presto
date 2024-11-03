@@ -104,6 +104,15 @@ function Register({ token, handleSuccess }) {
                     />
 
                     <TextField 
+                            label="Name"
+                            variant="outlined"
+                            type="text"
+                            value={name}
+                            onChange={e => setName(e.target.value)}
+                            style={{ width: '80%' }}
+                    />
+
+                    <TextField 
                         label="Password"
                         variant="outlined"
                         type="password"
