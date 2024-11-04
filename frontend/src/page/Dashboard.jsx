@@ -3,6 +3,8 @@ import { styled } from '@mui/material/styles';
 import { Box, Button, Typography, Modal, TextField } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
+import ErrorPopUp from "../component/ErrorPopUp";
+import axios from 'axios';
 
 const DashboardContainer = styled(Box)`
     background-color: #fbf1d7;
@@ -85,6 +87,8 @@ function Dashboard({ token }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newPresentationName, setNewPresentationName] = useState('');
     const inputRef = useRef(null);
+    const [errorMsg, setErrorMsg] = useState('');
+    const [isErrorOpen, setErrorOpen] = useState(false);
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -95,15 +99,39 @@ function Dashboard({ token }) {
         setNewPresentationName('');
     };
 
-    const handleCreatePresentation = () => {
+    const handleCloseError = () => {
+        setErrorOpen(false);
+    }
+
+    const handleCreatePresentation = async () => {
         if (newPresentationName.trim() !== '') {
             const newPresentation = {
                 id: presentations.length + 1,
                 name: newPresentationName,
                 slides: ['Empty Slide']
             };
-            setPresentations([...presentations, newPresentation]);
-            handleCloseModal();
+
+            try {
+                const response = await axios.put('http://localhost:5005/store', 
+                    { store: { presentations: newPresentation } },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        },
+                    }
+                );
+
+                if (response.status === 200) {
+                    setPresentations([...presentations, newPresentation]);
+                    handleCloseModal();
+                } else {
+                    setErrorMsg('Failed to store presentation');
+                    setErrorOpen(true);
+                }
+            } catch (error) {
+                setErrorMsg('Error storing presentation:', error.response.data.error);
+                setErrorOpen(true);
+            }
         }
     };
 
@@ -160,6 +188,9 @@ function Dashboard({ token }) {
                     </CreateModalContainer>
                 </Modal>
             </DashboardContainer>
+
+            <ErrorPopUp isOpen={isErrorOpen} onClose={handleCloseError} message = {errorMsg}>
+            </ErrorPopUp>
         </>
     );
 }
