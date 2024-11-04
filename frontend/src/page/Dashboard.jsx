@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { styled } from '@mui/material/styles';
-import { Box, Button, Typography, Modal, TextField } from '@mui/material';
+import { Box, Button, Typography, Modal, TextField, Card, CardMedia } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import ErrorPopUp from "../component/ErrorPopUp";
 import axios from 'axios';
+import Grid from '@mui/material/Grid2';
 
 const DashboardContainer = styled(Box)`
     background-color: #fbf1d7;
@@ -82,6 +83,27 @@ const CreateName = styled(TextField)({
     },
 });
 
+const PresentationCard = styled(Card)`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    width: 100%;
+    aspect-ratio: 2 / 1;
+    min-width: 100px;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+`;
+
+const Thumbnail = styled(CardMedia)`
+    height: 50%;
+    background-color: grey;
+    border-radius: 4px;
+    margin-bottom: 10px;
+`;
+
 function Dashboard({ token }) {
     const [presentations, setPresentations] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -89,6 +111,25 @@ function Dashboard({ token }) {
     const inputRef = useRef(null);
     const [errorMsg, setErrorMsg] = useState('');
     const [isErrorOpen, setErrorOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const fetchPresentations = async () => {
+        try {
+            const response = await axios.get('http://localhost:5005/store', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if (response.status === 200) {
+                const presentationsData = response.data.store.presentations;
+                const presentationsArray = Array.isArray(presentationsData) ? presentationsData : [];
+                setPresentations(presentationsArray);
+            }
+        } catch (error) {
+            setErrorMsg(error.response.data.error);
+            setErrorOpen(true);
+        }
+    };
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -103,37 +144,55 @@ function Dashboard({ token }) {
         setErrorOpen(false);
     }
 
+    const isEmptyPresentation = (presentation) =>
+        !presentation || Object.keys(presentation).length === 0;    
+
+    const shouldShowEmptyMessage = presentations.length === 0 || 
+        (presentations.length === 1 && isEmptyPresentation(presentations[0]));
+
     const handleCreatePresentation = async () => {
         if (newPresentationName.trim() !== '') {
             const newPresentation = {
                 id: presentations.length + 1,
                 name: newPresentationName,
-                slides: ['Empty Slide']
+                slides: ['Empty Slide'],
+                thumbnail: null
             };
 
+            setLoading(true);
             try {
+                await fetchPresentations();
+                let updatedPresentations = [newPresentation];
+                if (presentations.length > 0) {
+                    updatedPresentations = [...presentations, newPresentation];
+                } 
                 const response = await axios.put('http://localhost:5005/store', 
-                    { store: { presentations: newPresentation } },
+                    { store: { presentations: updatedPresentations } },
                     {
                         headers: {
                             Authorization: `Bearer ${token}`
                         },
                     }
                 );
-
                 if (response.status === 200) {
-                    setPresentations([...presentations, newPresentation]);
+                    setPresentations(updatedPresentations);
                     handleCloseModal();
                 } else {
                     setErrorMsg('Failed to store presentation');
                     setErrorOpen(true);
                 }
             } catch (error) {
-                setErrorMsg('Error storing presentation:', error.response.data.error);
+                setErrorMsg(error.response.data.error);
                 setErrorOpen(true);
+            } finally {
+                setLoading(false);
             }
         }
     };
+
+    useEffect(() => {
+        fetchPresentations();
+    }, []);
 
     useEffect(() => {
         if (isModalOpen && inputRef.current) {
@@ -153,14 +212,33 @@ function Dashboard({ token }) {
                     <Typography variant="h4" gutterBottom>
                         Presentations
                     </Typography>
-                    <div className="presentations-list">
-                        {presentations.map((presentation) => (
-                            <div key={presentation.id} className="presentation-item">
-                                <h3>{presentation.name}</h3>
-                                <p>Slides: {presentation.slides.length}</p>
-                            </div>
-                        ))}
-                    </div>
+
+                    {loading ? (
+                        <Typography variant="body1" color="textSecondary">
+                            Loading presentations...
+                        </Typography>
+                    ) : shouldShowEmptyMessage ? (
+                        <Typography variant="body1" color="textSecondary">
+                            No presentations available. Create a new one!
+                        </Typography>
+                    ) : (
+                        <Grid container spacing={2}>
+                            {presentations.map((presentation) => (
+                                <Grid size={{ xs: 6, md: 4 }} key={presentation.id}>
+                                    <PresentationCard>
+                                        <Thumbnail />
+                                        <Typography variant="h6">{presentation.name}</Typography>
+                                        <Typography variant="body2" color="textSecondary">
+                                            {presentation.description || ""}
+                                        </Typography>
+                                        <Typography variant="caption">
+                                            Slides: {presentation.slides.length}
+                                        </Typography>
+                                    </PresentationCard>
+                                </Grid>
+                            ))}
+                        </Grid>
+                    )}
                 </ContentArea>
 
                 <Modal open={isModalOpen} onClose={handleCloseModal}>
