@@ -4,6 +4,7 @@ import Welcome from './page/Welcome';
 import Register from './page/Register';
 import Login from './page/Login';
 import Dashboard from './page/Dashboard';
+import Presentation from './page/Presentation';
 import LogoutButton from './component/LogoutButton';
 
 function MainApp() {
@@ -40,6 +41,7 @@ function MainApp() {
                 <Route path="/register" element={<Register token={token} handleSuccess={handleNewToken} />} />
                 <Route path="/login" element={<Login token={token} handleSuccess={handleNewToken}/>} />
                 <Route path="/dashboard" element={<Dashboard token={token}/>}/>
+                <Route path="/dashboard/:presentationId" element={<Presentation token={token}/>} />
             </Routes>
             {token && (
                 <LogoutButton token={token} setToken={setToken} />

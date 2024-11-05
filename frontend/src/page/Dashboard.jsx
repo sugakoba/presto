@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Box, Button, Typography, Modal, TextField, Card, CardMedia } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -88,7 +89,7 @@ const PresentationCard = styled(Card)`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: #f0f0f0;
+    background-color: #fbf1d7;
     width: 100%;
     aspect-ratio: 2 / 1;
     min-width: 100px;
@@ -97,9 +98,10 @@ const PresentationCard = styled(Card)`
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
-const Thumbnail = styled(CardMedia)`
+const Thumbnail = styled(Box)`
+    aspect-ratio: 1 / 1;
     height: 50%;
-    background-color: grey;
+    background-color: #f0f0f0;
     border-radius: 4px;
     margin-bottom: 10px;
 `;
@@ -111,7 +113,11 @@ function Dashboard({ token }) {
     const inputRef = useRef(null);
     const [errorMsg, setErrorMsg] = useState('');
     const [isErrorOpen, setErrorOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
+
+    const navigate = useNavigate();
+    const handlePresentationClick = (presentationId) => {
+        navigate(`/dashboard/${presentationId}`);
+    };
 
     const fetchPresentations = async () => {
         try {
@@ -159,7 +165,6 @@ function Dashboard({ token }) {
                 thumbnail: null
             };
 
-            setLoading(true);
             try {
                 await fetchPresentations();
                 let updatedPresentations = [newPresentation];
@@ -184,9 +189,7 @@ function Dashboard({ token }) {
             } catch (error) {
                 setErrorMsg(error.response.data.error);
                 setErrorOpen(true);
-            } finally {
-                setLoading(false);
-            }
+            } 
         }
     };
 
@@ -213,11 +216,7 @@ function Dashboard({ token }) {
                         Presentations
                     </Typography>
 
-                    {loading ? (
-                        <Typography variant="body1" color="textSecondary">
-                            Loading presentations...
-                        </Typography>
-                    ) : shouldShowEmptyMessage ? (
+                    {shouldShowEmptyMessage ? (
                         <Typography variant="body1" color="textSecondary">
                             No presentations available. Create a new one!
                         </Typography>
@@ -225,8 +224,17 @@ function Dashboard({ token }) {
                         <Grid container spacing={2}>
                             {presentations.map((presentation) => (
                                 <Grid size={{ xs: 6, md: 4 }} key={presentation.id}>
-                                    <PresentationCard>
-                                        <Thumbnail />
+                                    <PresentationCard onClick={() => handlePresentationClick(presentation.id)}>
+                                        {presentation.thumbnail ? (
+                                            <CardMedia
+                                            component="img"
+                                            height="140"
+                                            image={presentation.thumbnail}
+                                            alt={presentation.name}
+                                            />
+                                        ) : (
+                                            <Thumbnail /> 
+                                        )}
                                         <Typography variant="h6">{presentation.name}</Typography>
                                         <Typography variant="body2" color="textSecondary">
                                             {presentation.description || ""}
