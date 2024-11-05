@@ -223,7 +223,7 @@ function Dashboard({ token }) {
                     ) : (
                         <Grid container spacing={2}>
                             {presentations.map((presentation) => (
-                                <Grid size={{ xs: 6, md: 4 }} key={presentation.id}>
+                                <Grid size={{ xs: 12, sm: 8, md: 4 }} key={presentation.id}>
                                     <PresentationCard onClick={() => handlePresentationClick(presentation.id)}>
                                         {presentation.thumbnail ? (
                                             <CardMedia
