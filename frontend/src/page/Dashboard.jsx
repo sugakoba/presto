@@ -161,7 +161,12 @@ function Dashboard({ token }) {
             const newPresentation = {
                 id: presentations.length + 1,
                 name: newPresentationName,
-                slides: ['Empty Slide'],
+                slides: [{
+                    "id": 1,
+                    "title": null,
+                    "content": null,
+                    "elements": []
+                }],
                 thumbnail: null
             };
 
@@ -228,7 +233,7 @@ function Dashboard({ token }) {
                                         {presentation.thumbnail ? (
                                             <CardMedia
                                             component="img"
-                                            height="140"
+                                            height="100"
                                             image={presentation.thumbnail}
                                             alt={presentation.name}
                                             />
