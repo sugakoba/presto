@@ -6,12 +6,21 @@ import axios from 'axios';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import DeleteIcon from '@mui/icons-material/Delete';
 import ErrorPopUp from "../component/ErrorPopUp";
 
 const TitleContainer = styled(Box)`
     display: flex;
+    justify-content: center;
     align-items: center;
     margin-bottom: 10px;
+`;
+
+const ButtonContainer = styled(Box)`
+    display: flex;
+    justify-content: end;
+    margin: 10px;
 `;
 
 const SaveButton = styled(Button)`
@@ -99,6 +108,45 @@ function Presentation({ token }) {
         setShowDeleteConfirmation(false);
     };
 
+    const handleThumbnailUpload = async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+                const base64String = reader.result;
+                const updatePresentations = presentations.map((presentation) =>
+                    Number(presentation.id) === Number(presentationId)
+                        ? { ...presentation, thumbnail: base64String }
+                        : presentation
+                )
+        
+                try {
+                    const response = await axios.put('http://localhost:5005/store', 
+                        { store: { presentations: updatePresentations } },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            },
+                        }
+                    );
+                    if (response.status === 200) {
+                        setPresentation((prevPresentation) => ({
+                            ...prevPresentation,
+                            thumbnail: base64String, 
+                        }));
+                        setPresentations(updatePresentations)
+                        setErrorMsg('Image successfully uploaded!');
+                        setErrorOpen(true);
+                    }
+                } catch (error) {
+                    setErrorMsg('Failed to save new thumbnail: ', error.response.data.error);
+                    setErrorOpen(true);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const deletePresentation = async () => {
         const afterDeletion = presentations.filter(presentation => Number(presentation.id) !== Number(presentationId));
         try {
@@ -115,8 +163,8 @@ function Presentation({ token }) {
                 navigate('/dashboard');
             }
         } catch (error) {
-            setErrorMsg('Failed to delete presentation:', error.response.data.error);
-            setErrorOpen(true);
+            setErrorMsg('Failed to delete presentation: ', error.response.data.error);
+            setErrorOpen(true); 
         }
     };
 
@@ -146,7 +194,7 @@ function Presentation({ token }) {
                 setPresentations(updatePresentations)
             }
         } catch (error) {
-            setErrorMsg('Failed to delete presentation:', error.response.data.error);
+            setErrorMsg('Failed to save new title: ', error.response.data.error);
             setErrorOpen(true);
         }
     };
@@ -186,12 +234,47 @@ function Presentation({ token }) {
 
     return (
         <>
+            <ButtonContainer>
+                <SaveButton variant="contained" onClick={handleBack} startIcon={<ArrowBackIcon />}>
+                    Back
+                </SaveButton>
+                <CancelButton variant="outlined" onClick={handleDeleteClick} startIcon={<DeleteIcon />}>
+                    Delete
+                </CancelButton>
+            </ButtonContainer>
+            <Modal
+                open={showDeleteConfirmation}
+                onClose={cancelDelete}
+                aria-labelledby="delete-confirmation-title"
+            >
+                <div style={{ padding: 20, background: '#fff', margin: 'auto', width: 300 }}>
+                    <Typography id="delete-confirmation-title" variant="h6">
+                        Are you sure?
+                    </Typography>
+                    <Button onClick={deletePresentation} color="error">
+                        Yes
+                    </Button>
+                    <Button onClick={cancelDelete}>No</Button>
+                </div>
+            </Modal>
             <TitleContainer>
                 <Typography variant="h5" style={{ marginRight: '10px' }}>
                     {title}
                 </Typography>
                 <EditOutlinedIcon onClick={handleOpenModal} aria-label="edit title">
                 </EditOutlinedIcon>
+
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                    <Button variant="contained" component="label">
+                        Change Thumbnail
+                        <input
+                            type="file"
+                            hidden
+                            accept="image/*"
+                            onChange={handleThumbnailUpload}
+                        />
+                    </Button>
+                </Box>
             </TitleContainer>
             <Modal open={isModalOpen} onClose={handleCloseModal}>
                 <EditModalContainer>
@@ -216,27 +299,6 @@ function Presentation({ token }) {
                         </CancelButton>
                     </div>
                 </EditModalContainer>
-            </Modal>
-            <Button variant="outlined" onClick={handleBack}>
-                Back
-            </Button>
-            <Button variant="contained" color="error" onClick={handleDeleteClick}>
-                Delete Presentation
-            </Button>
-            <Modal
-                open={showDeleteConfirmation}
-                onClose={cancelDelete}
-                aria-labelledby="delete-confirmation-title"
-            >
-                <div style={{ padding: 20, background: '#fff', margin: 'auto', width: 300 }}>
-                    <Typography id="delete-confirmation-title" variant="h6">
-                        Are you sure?
-                    </Typography>
-                    <Button onClick={deletePresentation} color="error">
-                        Yes
-                    </Button>
-                    <Button onClick={cancelDelete}>No</Button>
-                </div>
             </Modal>
 
             <ErrorPopUp isOpen={isErrorOpen} onClose={handleCloseError} message = {errorMsg}>
