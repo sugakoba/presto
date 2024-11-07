@@ -158,13 +158,15 @@ function Dashboard({ token }) {
 
     const handleCreatePresentation = async () => {
         if (newPresentationName.trim() !== '') {
+            /*********************************
+             * Automatically creates 1 slide *
+            **** Change Slide layout here ****
+            **********************************/
             const newPresentation = {
                 id: presentations.length + 1,
                 name: newPresentationName,
                 slides: [{
                     "id": 1,
-                    "title": null,
-                    "content": null,
                     "elements": []
                 }],
                 thumbnail: null
