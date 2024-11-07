@@ -1,18 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { Box, Button, Typography, Modal, TextField, IconButton, List, ListItem, ListItemText, Divider, Card, CardContent, Fab } from '@mui/material';
+import { Box, Button, Typography, Modal, TextField, IconButton, List, Card, CardContent, Fab } from '@mui/material';
 import axios from 'axios';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ImageIcon from '@mui/icons-material/Image';
+import {
+    EditOutlined as EditOutlinedIcon,
+    Check as CheckIcon,
+    Close as CloseIcon,
+    KeyboardArrowLeft as KeyboardArrowLeftIcon,
+    KeyboardArrowRight as KeyboardArrowRightIcon,
+    ArrowBack as ArrowBackIcon,
+    Add as AddIcon,
+    Delete as DeleteIcon,
+    Image as ImageIcon
+  } from '@mui/icons-material';
 import ErrorPopUp from "../component/ErrorPopUp";
+import Slide from "../component/Slide"
 
 const PresentationContainer = styled(Box)`
     background-color: #fbf1d7;
@@ -21,10 +24,14 @@ const PresentationContainer = styled(Box)`
 `;
 
 const TitleContainer = styled(Box)`
+    position: absolute;
     display: flex;
     justify-content: center;
+    left: 50%;
     align-items: center;
     margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
 `;
 
 const ButtonContainer = styled(Box)`
@@ -81,6 +88,7 @@ const EditName = styled(TextField)({
 });
 
 const SlideContainer = styled(Box)`
+    position: relative;
     display: flex;
     flex-direction: column;
     width: 80vw;
@@ -160,39 +168,22 @@ function Presentation({ token }) {
         setShowDeleteConfirmation(false);
     };
 
+    /*********************************
+    **********************************
+    **** Change Slide layout here ****
+    **********************************
+    **********************************/
+   
     const addNewSlide = async () => {
         const newSlide = {
             id: presentation.slides.length + 1,
-            title: null,
-            content: null,
             elements: []
         };
         const updatedSlides = [...presentation.slides, newSlide];
         const updatedPresentation = { ...presentation, slides: updatedSlides };
         setPresentation(updatedPresentation);
         setCurrentSlideIndex(updatedSlides.length - 1);
-        
-        try {
-            const updatePresentations = presentations.map((presentation) =>
-                Number(presentation.id) === Number(presentationId)
-                    ? updatedPresentation
-                    : presentation
-            );
-            const response = await axios.put('http://localhost:5005/store', 
-                { store: { presentations: updatePresentations } },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    },
-                }
-            );
-            if (response.status === 200) {
-                setPresentations(updatePresentations);
-            }
-        } catch (error) {
-            setErrorMsg('Failed to save new slide: ', error.response.data.error);
-            setErrorOpen(true);
-        }
+        updatePresentationBackend(updatedPresentation);
     };
 
     const handleNextSlide = () => {
@@ -264,6 +255,44 @@ function Presentation({ token }) {
         } catch (error) {
             setErrorMsg('Failed to delete presentation: ', error.response.data.error);
             setErrorOpen(true); 
+        }
+    };
+
+    const deleteCurrentSlide = () => {
+        if (presentation.slides.length === 1) {
+            setErrorMsg('Cannot delete the only slide!');
+            setErrorOpen(true);
+            return;
+        }
+
+        const updatedSlides = presentation.slides.filter((_, index) => index !== currentSlideIndex);
+        const updatedPresentation = { ...presentation, slides: updatedSlides };
+        setPresentation(updatedPresentation);
+        setCurrentSlideIndex(Math.max(currentSlideIndex - 1, 0));
+        updatePresentationBackend(updatedPresentation);
+    };
+
+    const updatePresentationBackend = async (updatedPresentation) => {
+        try {
+            const updatePresentations = presentations.map((presentation) =>
+                Number(presentation.id) === Number(presentationId)
+                    ? updatedPresentation
+                    : presentation
+            );
+            const response = await axios.put('http://localhost:5005/store', 
+                { store: { presentations: updatePresentations } },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                }
+            );
+            if (response.status === 200) {
+                setPresentations(updatePresentations);
+            }
+        } catch (error) {
+            setErrorMsg(error.response.data.error);
+            setErrorOpen(true);
         }
     };
 
@@ -342,6 +371,25 @@ function Presentation({ token }) {
                         Delete
                     </CancelButton>
                 </ButtonContainer>
+                <TitleContainer>
+                    <Typography variant="h4" style={{ marginRight: '5px' }}>
+                        {title}
+                    </Typography>
+                    <IconButton onClick={handleOpenModal} aria-label="edit title">
+                        <EditOutlinedIcon />
+                    </IconButton>
+                </TitleContainer>
+                <ButtonContainer>
+                    <CancelButton variant="outlined" component="label" startIcon={<ImageIcon />}>
+                        Change Thumbnail
+                        <input
+                            type="file"
+                            hidden
+                            accept="image/*"
+                            onChange={handleThumbnailUpload}
+                        />
+                    </CancelButton>
+                </ButtonContainer>
                 <Modal
                     open={showDeleteConfirmation}
                     onClose={cancelDelete}
@@ -357,25 +405,6 @@ function Presentation({ token }) {
                         <Button onClick={cancelDelete}>No</Button>
                     </div>
                 </Modal>
-                <ButtonContainer>
-                    <CancelButton variant="outlined" component="label" startIcon={<ImageIcon />}>
-                        Change Thumbnail
-                        <input
-                            type="file"
-                            hidden
-                            accept="image/*"
-                            onChange={handleThumbnailUpload}
-                        />
-                    </CancelButton>
-                </ButtonContainer>
-                <TitleContainer>
-                    <Typography variant="h4" style={{ marginRight: '5px' }}>
-                        {title}
-                    </Typography>
-                    <IconButton onClick={handleOpenModal} aria-label="edit title">
-                        <EditOutlinedIcon />
-                    </IconButton>
-                </TitleContainer>
                 <Modal open={isModalOpen} onClose={handleCloseModal}>
                     <EditTitleContainer>
                         <EditTitle variant="h5" component="h2">
@@ -400,7 +429,7 @@ function Presentation({ token }) {
                         </div>
                     </EditTitleContainer>
                 </Modal>
-                <Box display="flex" height="calc(100vh - 170px)">
+                <Box display="flex" height="calc(100vh - 120px)" position="relative">
                     <SlideListContainer>
                         <List style={{ padding: '0px' }}>
                             {presentation.slides && presentation.slides.map((slide, index) => (
@@ -410,24 +439,30 @@ function Presentation({ token }) {
                                     onClick={() => setCurrentSlideIndex(index)}
                                 >
                                     <CardContent>
-                                        <Typography variant="subtitle1">{slide.id}</Typography>
+                                        <Typography variant="subtitle1">{index + 1}</Typography>
                                     </CardContent>
                                 </SlideCard>
                             ))}
                         </List>
                     </SlideListContainer>
                     <SlideContainer>
-                        <ButtonContainer>
-                            <IconButton onClick={handlePrevSlide} disabled={currentSlideIndex === 0}>
-                                <KeyboardArrowLeftIcon />
+                        <Box display="flex" marginLeft="10px">
+                            <IconButton aria-label="delete" onClick={deleteCurrentSlide} style={{ marginRight: 'auto' }}>
+                                <DeleteIcon />
                             </IconButton>
-                            <IconButton
-                                onClick={handleNextSlide}
-                                disabled={presentation.slides && currentSlideIndex === presentation.slides.length - 1}
-                            >
-                                <KeyboardArrowRightIcon />
-                            </IconButton>
-                        </ButtonContainer>
+                            <ButtonContainer>
+                                <IconButton onClick={handlePrevSlide} disabled={currentSlideIndex === 0}>
+                                    <KeyboardArrowLeftIcon />
+                                </IconButton>
+                                <IconButton
+                                    onClick={handleNextSlide}
+                                    disabled={presentation.slides && currentSlideIndex === presentation.slides.length - 1}
+                                >
+                                    <KeyboardArrowRightIcon />
+                                </IconButton>
+                            </ButtonContainer>
+                        </Box>
+                        <Slide currentSlideIndex={currentSlideIndex} />
                         <AddSlideButton aria-label="add" onClick={addNewSlide}>
                             <AddIcon sx={{ color: 'white' }}/>
                         </AddSlideButton>
