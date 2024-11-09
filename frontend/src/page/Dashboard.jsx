@@ -163,7 +163,7 @@ function Dashboard({ token }) {
             **** Change Slide layout here ****
             **********************************/
             const newPresentation = {
-                id: presentations.length + 1,
+                id: presentations[presentations.length - 1].id + 1,
                 name: newPresentationName,
                 slides: [{
                     "id": 1,

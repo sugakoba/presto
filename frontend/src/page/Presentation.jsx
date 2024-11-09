@@ -129,6 +129,13 @@ const AddSlideButton = styled(Fab)`
     right: 20px;
 `
 
+const ConfirmDelete = styled(Box)`
+    padding: 20px;
+    background-color: #fff;
+    margin: auto;
+    width: 300px;
+`
+
 function Presentation({ token }) {
     const [presentation, setPresentation] = useState({});
     const [presentations, setPresentations] = useState([]);
@@ -173,10 +180,10 @@ function Presentation({ token }) {
     **** Change Slide layout here ****
     **********************************
     **********************************/
-   
+
     const addNewSlide = async () => {
         const newSlide = {
-            id: presentation.slides.length + 1,
+            id: presentation.slides[presentation.slides.length - 1].id + 1,
             elements: []
         };
         const updatedSlides = [...presentation.slides, newSlide];
@@ -395,7 +402,7 @@ function Presentation({ token }) {
                     onClose={cancelDelete}
                     aria-labelledby="delete-confirmation-title"
                 >
-                    <div style={{ padding: 20, background: '#fff', margin: 'auto', width: 300 }}>
+                    <ConfirmDelete>
                         <Typography id="delete-confirmation-title" variant="h6">
                             Are you sure?
                         </Typography>
@@ -403,7 +410,7 @@ function Presentation({ token }) {
                             Yes
                         </Button>
                         <Button onClick={cancelDelete}>No</Button>
-                    </div>
+                    </ConfirmDelete>
                 </Modal>
                 <Modal open={isModalOpen} onClose={handleCloseModal}>
                     <EditTitleContainer>
@@ -431,7 +438,7 @@ function Presentation({ token }) {
                 </Modal>
                 <Box display="flex" height="calc(100vh - 120px)" position="relative">
                     <SlideListContainer>
-                        <List style={{ padding: '0px' }}>
+                        <List sx={{ padding: '0px' }}>
                             {presentation.slides && presentation.slides.map((slide, index) => (
                                 <SlideCard
                                     key={slide.id}
@@ -447,7 +454,7 @@ function Presentation({ token }) {
                     </SlideListContainer>
                     <SlideContainer>
                         <Box display="flex" marginLeft="10px">
-                            <IconButton aria-label="delete" onClick={deleteCurrentSlide} style={{ marginRight: 'auto' }}>
+                            <IconButton aria-label="delete" onClick={deleteCurrentSlide} sx={{ marginRight: 'auto' }}>
                                 <DeleteIcon />
                             </IconButton>
                             <ButtonContainer>
