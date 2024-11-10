@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { Box, Button, Typography, Modal, TextField, IconButton, List, Card, CardContent, Fab } from '@mui/material';
+import { Box, Button, Typography, Modal, TextField, IconButton, List, Card, CardContent, Fab, Drawer, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import axios from 'axios';
 import {
     EditOutlined as EditOutlinedIcon,
@@ -12,7 +12,8 @@ import {
     ArrowBack as ArrowBackIcon,
     Add as AddIcon,
     Delete as DeleteIcon,
-    Image as ImageIcon
+    Image as ImageIcon,
+    Menu as MenuIcon
   } from '@mui/icons-material';
 import ErrorPopUp from "../component/ErrorPopUp";
 import Slide from "../component/Slide"
@@ -30,8 +31,11 @@ const TitleContainer = styled(Box)`
     left: 50%;
     align-items: center;
     margin-bottom: 10px;
-    margin-left: auto;
-    margin-right: auto;
+    transform: translateX(-50%); 
+    @media (max-width: 600px) {
+        position: static; 
+        transform: none;
+    }
 `;
 
 const ButtonContainer = styled(Box)`
@@ -135,6 +139,10 @@ const ConfirmDelete = styled(Box)`
     margin: auto;
     width: 300px;
 `
+const DrawerContent = styled(Box)`
+    width: 250px;
+    padding: 20px;
+`;
 
 function Presentation({ token }) {
     const [presentation, setPresentation] = useState({});
@@ -147,6 +155,7 @@ function Presentation({ token }) {
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
     const [errorMsg, setErrorMsg] = useState('');
     const [isErrorOpen, setErrorOpen] = useState(false);
+    const [isDrawerOpen, setDrawerOpen] = useState(false);
     const inputRef = useRef(null);
     const navigate = useNavigate();
 
@@ -357,6 +366,10 @@ function Presentation({ token }) {
         }
     };
 
+    const toggleDrawer = (open) => (event) => {
+        setDrawerOpen(open);
+    };
+
     useEffect(() => {
         fetchPresentationInfo();
     }, []);
@@ -370,7 +383,45 @@ function Presentation({ token }) {
     return (
         <>
             <PresentationContainer>
-                <ButtonContainer>
+                <IconButton 
+                    onClick={toggleDrawer(true)} 
+                    sx={{
+                        position: 'fixed',
+                        top: '10px',
+                        right: '10px',
+                        display: { xs: 'block', sm: 'none' }
+                    }}>
+                    <MenuIcon />
+                </IconButton>
+                <Drawer anchor="right" open={isDrawerOpen} onClose={toggleDrawer(false)}>
+                    <DrawerContent>
+                        <ListItemButton variant="contained" onClick={handleBack} fullWidth>
+                            <ListItemIcon>
+                                <ArrowBackIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Back" />
+                        </ListItemButton>
+                        <ListItemButton variant="outlined" onClick={handleDeleteClick} fullWidth>
+                            <ListItemIcon>
+                                <DeleteIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Delete" />
+                        </ListItemButton>
+                        <ListItemButton variant="outlined" component="label" fullWidth>
+                            <ListItemIcon>
+                                <ImageIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Change Thumbnail" />
+                            <input
+                                type="file"
+                                hidden
+                                accept="image/*"
+                                onChange={handleThumbnailUpload}
+                            />
+                        </ListItemButton>
+                    </DrawerContent>
+                </Drawer>
+                <ButtonContainer sx={{ display: { xs: 'none', sm: 'flex' }}}>
                     <SaveButton variant="contained" onClick={handleBack} startIcon={<ArrowBackIcon />}>
                         Back
                     </SaveButton>
@@ -379,14 +430,14 @@ function Presentation({ token }) {
                     </CancelButton>
                 </ButtonContainer>
                 <TitleContainer>
-                    <Typography variant="h4" style={{ marginRight: '5px' }}>
+                    <Typography variant="h4" sx={{ margin: '5px' }}>
                         {title}
                     </Typography>
                     <IconButton onClick={handleOpenModal} aria-label="edit title">
                         <EditOutlinedIcon />
                     </IconButton>
                 </TitleContainer>
-                <ButtonContainer>
+                <ButtonContainer sx={{ display: { xs: 'none', sm: 'flex' }}}>
                     <CancelButton variant="outlined" component="label" startIcon={<ImageIcon />}>
                         Change Thumbnail
                         <input
@@ -436,7 +487,7 @@ function Presentation({ token }) {
                         </div>
                     </EditTitleContainer>
                 </Modal>
-                <Box display="flex" height="calc(100vh - 120px)" position="relative">
+                <Box sx={{ display: 'flex', height: 'calc(100vh - 120px)', position: 'relative' }}>
                     <SlideListContainer>
                         <List sx={{ padding: '0px' }}>
                             {presentation.slides && presentation.slides.map((slide, index) => (
@@ -453,7 +504,7 @@ function Presentation({ token }) {
                         </List>
                     </SlideListContainer>
                     <SlideContainer>
-                        <Box display="flex" marginLeft="10px">
+                        <Box sx={{ display: 'flex', marginLeft: '10px' }}>
                             <IconButton aria-label="delete" onClick={deleteCurrentSlide} sx={{ marginRight: 'auto' }}>
                                 <DeleteIcon />
                             </IconButton>

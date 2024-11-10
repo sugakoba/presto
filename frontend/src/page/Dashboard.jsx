@@ -21,11 +21,12 @@ const DashboardContainer = styled(Box)`
 `;
 
 const Sidebar = styled(Box)`
-    width: 250px;
+    max-width: 250px;
     padding-top: 40px;
     padding-right: 20px;
     display: flex;
     flex-direction: column;
+    flex: 1;
 `;
 
 const ContentArea = styled(Box)`
@@ -96,6 +97,7 @@ const PresentationCard = styled(Card)`
     padding: 10px;
     border-radius: 8px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 `;
 
 const Thumbnail = styled(Box)`
@@ -235,7 +237,7 @@ function Dashboard({ token }) {
                                         {presentation.thumbnail ? (
                                             <CardMedia
                                             component="img"
-                                            height="100"
+                                            sx={{ maxHeight: 100, width: 'auto', height: '50%', margin: '7px' }}
                                             image={presentation.thumbnail}
                                             alt={presentation.name}
                                             />
