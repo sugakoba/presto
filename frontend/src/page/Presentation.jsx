@@ -147,6 +147,39 @@ const DrawerContent = styled(Box)`
     padding: 20px;
 `;
 
+const AddElementContainer = styled(Box)`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50vw;
+    height: 70vh;
+    background-color: #fff;
+    box-shadow: 24;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+`;
+
+const AddElementTitle = styled(Typography)`
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    padding-bottom: 20px;
+`;
+
+const AddElementInput = styled(TextField)({
+    width: '200px',
+    '& .MuiOutlinedInput-root': {
+        '&.Mui-focused fieldset': {
+            borderColor: '#C46243', 
+        },
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+        color: '#C46243', 
+    },
+});
+
 function Presentation({ token }) {
     const [presentation, setPresentation] = useState({});
     const [presentations, setPresentations] = useState([]);
@@ -162,6 +195,12 @@ function Presentation({ token }) {
     const [isDrawerOpen, setDrawerOpen] = useState(false);
     const inputRef = useRef(null);
     const navigate = useNavigate();
+
+    const [textAreaHeight, setTextAreaHeight] = useState(0);
+    const [textAreaWidth, setTextAreaWidth] = useState(0);
+    const [text, setText] = useState('');
+    const [textSize, setTextSize] = useState('0');
+    const [textColor, setTextColor] = useState('0');
 
     const handleBack = () => {
         navigate('/dashboard');
@@ -378,6 +417,10 @@ function Presentation({ token }) {
         }
     };
 
+    const handleNewText = async () => {
+
+    };
+
     const toggleDrawer = (open) => (event) => {
         setDrawerOpen(open);
     };
@@ -500,6 +543,58 @@ function Presentation({ token }) {
                     </EditTitleContainer>
                 </Modal>
 {/* Need to edit here to add text model. */}
+
+                <Modal open={isTextModalOpen} onClose={handleCloseTextModal}>
+                    <AddElementContainer>
+                        <AddElementTitle variant="h5" component="h2">
+                            Add New Text
+                        </AddElementTitle>
+                        <AddElementInput 
+                            required
+                            onChange={(e) => setTextAreaHeight(e.target.value)}
+                            label="Enter Text Area Height"
+                            variant="outlined"
+                            margin="normal"
+                        />
+                        <AddElementInput 
+                            required
+                            onChange={(e) => setTextAreaWidth(e.target.value)}
+                            label="Enter Text Area Width"
+                            variant="outlined"
+                            margin="normal"
+                        />
+                        <AddElementInput 
+                            required
+                            onChange={(e) => setText(e.target.value)}
+                            label="Enter New Text Content"
+                            variant="outlined"
+                            margin="normal"
+                        />
+                        <AddElementInput 
+                            required
+                            onChange={(e) => setTextSize(e.target.value)}
+                            label="Enter New Text Size"
+                            variant="outlined"
+                            margin="normal"
+                        />
+                        <AddElementInput 
+                            required
+                            onChange={(e) => setTextColor(e.target.value)}
+                            label="Enter New Text Color"
+                            variant="outlined"
+                            margin="normal"
+                        />
+                        <div>
+                            <SaveButton variant="contained" onClick={handleNewText} startIcon={<CheckIcon />}>
+                                Save
+                            </SaveButton>
+                            <CancelButton variant="outlined" onClick={handleCloseTextModal} startIcon={<CloseIcon />}>
+                                Cancel
+                            </CancelButton>
+                        </div>
+                        
+                    </AddElementContainer>
+                </Modal>
 
                 
 
