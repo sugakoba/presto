@@ -31,10 +31,13 @@ export default App
 //port: 5005
 
 // TODO: 
+// Top bar Can be hidden away by panel - need help. 
+// Clicked for text, model appear.
+// Once clicked, send to Sever. Then edit the slide to make it appear. 
+// Presentation: Soft grey border, Double click would allow to edit as above. 
+// 
 // set up linting, test comes last. 
 
 
-//If there is a library exists go use it. 
-//Hayden week 8 Lecture from 1 hour 30mins till the end focuses on dashboard, 
-//VERY USEFUl, only 15mins long.
+//If there is a library exists go use it. \
 

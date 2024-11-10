@@ -13,7 +13,10 @@ import {
     Add as AddIcon,
     Delete as DeleteIcon,
     Image as ImageIcon,
-    Menu as MenuIcon
+    Menu as MenuIcon,
+    TextFields as TextIcon,
+    VideoCameraBack as VideoIcon,
+    Code as CodeIcon,
   } from '@mui/icons-material';
 import ErrorPopUp from "../component/ErrorPopUp";
 import Slide from "../component/Slide"
@@ -151,6 +154,7 @@ function Presentation({ token }) {
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [title, setTitle] = useState(presentation.name);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isTextModalOpen, setIsTextModalOpen] = useState(false);
     const [newTitle, setNewTitle] = useState(title);
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
     const [errorMsg, setErrorMsg] = useState('');
@@ -175,6 +179,14 @@ function Presentation({ token }) {
     const handleCloseModal = () => {
         setIsModalOpen(false);
     };
+
+    const handleOpenTextModal = () => {
+        setIsTextModalOpen(true);
+    }
+
+    const handleCloseTextModal = () => {
+        setIsTextModalOpen(false);
+    }
 
     const handleCloseError = () => {
         setErrorOpen(false);
@@ -487,6 +499,12 @@ function Presentation({ token }) {
                         </div>
                     </EditTitleContainer>
                 </Modal>
+{/* Need to edit here to add text model. */}
+
+                
+
+
+
                 <Box sx={{ display: 'flex', height: 'calc(100vh - 120px)', position: 'relative' }}>
                     <SlideListContainer>
                         <List sx={{ padding: '0px' }}>
@@ -508,6 +526,24 @@ function Presentation({ token }) {
                             <IconButton aria-label="delete" onClick={deleteCurrentSlide} sx={{ marginRight: 'auto' }}>
                                 <DeleteIcon />
                             </IconButton>
+{/* Section 3: Edit here */}
+                            <IconButton aria-label="textInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                <TextIcon />
+                            </IconButton>
+
+                            <IconButton aria-label="imageInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                <ImageIcon />
+                            </IconButton>
+
+                            <IconButton aria-label="videoInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                <VideoIcon />
+                            </IconButton>
+
+                            <IconButton aria-label="codeInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                <CodeIcon />
+                            </IconButton>
+{/* End here */}
+
                             <ButtonContainer>
                                 <IconButton onClick={handlePrevSlide} disabled={currentSlideIndex === 0}>
                                     <KeyboardArrowLeftIcon />

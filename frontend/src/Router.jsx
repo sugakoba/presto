@@ -30,9 +30,6 @@ function MainApp() {
         }
     }, [token, location.pathname]);
 
-
-    //Might need to refer to Dashboard if the token exists straight away
-
     return (
         <>
             <Routes>
