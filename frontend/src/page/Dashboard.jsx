@@ -159,13 +159,18 @@ function Dashboard({ token }) {
         (presentations.length === 1 && isEmptyPresentation(presentations[0]));
 
     const handleCreatePresentation = async () => {
+        let newId = 1;
+        if (presentations.length > 0) {
+            newId = presentations[presentations.length - 1].id + 1;
+        }
         if (newPresentationName.trim() !== '') {
             /*********************************
              * Automatically creates 1 slide *
             **** Change Slide layout here ****
             **********************************/
             const newPresentation = {
-                id: presentations[presentations.length - 1].id + 1,
+                id: newId,
+                description: "",
                 name: newPresentationName,
                 slides: [{
                     "id": 1,
@@ -246,7 +251,7 @@ function Dashboard({ token }) {
                                         )}
                                         <Typography variant="h6">{presentation.name}</Typography>
                                         <Typography variant="body2" color="textSecondary">
-                                            {presentation.description || ""}
+                                            {presentation.description}
                                         </Typography>
                                         <Typography variant="caption">
                                             Slides: {presentation.slides.length}
