@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Box, Button, Typography, Modal, TextField, Card, CardMedia } from '@mui/material';
+import PanoramaIcon from '@mui/icons-material/Panorama';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import ErrorPopUp from "../component/ErrorPopUp";
@@ -112,6 +113,8 @@ function Dashboard({ token }) {
     const [presentations, setPresentations] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newPresentationName, setNewPresentationName] = useState('');
+    const [newDescription, setNewDescription] = useState('');
+    const [newThumbnail, setNewThumbnail] = useState('');
     const inputRef = useRef(null);
     const [errorMsg, setErrorMsg] = useState('');
     const [isErrorOpen, setErrorOpen] = useState(false);
@@ -152,6 +155,20 @@ function Dashboard({ token }) {
         setErrorOpen(false);
     }
 
+    const handleThumbnailUpload = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            
+            reader.onloadend = () => {
+                const base64String = reader.result; 
+                setNewThumbnail(base64String); 
+            };
+            
+            reader.readAsDataURL(file); 
+        }
+    };
+
     const isEmptyPresentation = (presentation) =>
         !presentation || Object.keys(presentation).length === 0;    
 
@@ -170,14 +187,14 @@ function Dashboard({ token }) {
             **********************************/
             const newPresentation = {
                 id: newId,
-                description: "",
+                description: newDescription,
                 name: newPresentationName,
                 slides: [{
                     "id": 1,
                     "backgroundPicker": "white",
                     "elements": []
                 }],
-                thumbnail: null
+                thumbnail: newThumbnail
             };
 
             try {
@@ -276,8 +293,25 @@ function Dashboard({ token }) {
                             onChange={(e) => setNewPresentationName(e.target.value)}
                             label="Enter name"
                             variant="outlined"
-                            margin="normal"
+                            sx={{ mb: 1 }}
                         />
+                        <CreateName
+                            inputRef={inputRef} 
+                            value={newDescription}
+                            onChange={(e) => setNewDescription(e.target.value)}
+                            label="Enter description"
+                            variant="outlined"
+                            sx={{ mb: 1 }}
+                        />
+                        <CancelButton variant="outlined" component="label" startIcon={<PanoramaIcon />} sx={{ mb: 2 }}>
+                            Choose Thumbnail
+                            <input
+                                type="file"
+                                hidden
+                                accept="image/*"
+                                onChange={handleThumbnailUpload}
+                            />
+                        </CancelButton>
                         <div>
                             <CreateButton variant="contained" onClick={handleCreatePresentation} startIcon={<AddIcon />}>
                                 Create
