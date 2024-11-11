@@ -19,7 +19,7 @@ import {
     Code as CodeIcon,
   } from '@mui/icons-material';
 import ErrorPopUp from "../component/ErrorPopUp";
-import Slide from "../component/Slide"
+import Slide from "../component/Slide";
 
 const PresentationContainer = styled(Box)`
     background-color: #fbf1d7;
@@ -235,6 +235,30 @@ function Presentation({ token }) {
         setShowDeleteConfirmation(false);
     };
 
+    const updatePresentationBackend = async (updatedPresentation) => {
+        try {
+            const updatePresentations = presentations.map((presentation) =>
+                Number(presentation.id) === Number(presentationId)
+                    ? updatedPresentation
+                    : presentation
+            );
+            const response = await axios.put('http://localhost:5005/store', 
+                { store: { presentations: updatePresentations } },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                }
+            );
+            if (response.status === 200) {
+                setPresentations(updatePresentations);
+            }
+        } catch (error) {
+            setErrorMsg(error.response.data.error);
+            setErrorOpen(true);
+        }
+    };
+
     /*********************************
     **********************************
     **** Change Slide layout here ****
@@ -244,6 +268,7 @@ function Presentation({ token }) {
     const addNewSlide = async () => {
         const newSlide = {
             id: presentation.slides[presentation.slides.length - 1].id + 1,
+            backgroundStyle: "white",
             elements: []
         };
         const updatedSlides = [...presentation.slides, newSlide];
@@ -339,29 +364,14 @@ function Presentation({ token }) {
         updatePresentationBackend(updatedPresentation);
     };
 
-    const updatePresentationBackend = async (updatedPresentation) => {
-        try {
-            const updatePresentations = presentations.map((presentation) =>
-                Number(presentation.id) === Number(presentationId)
-                    ? updatedPresentation
-                    : presentation
-            );
-            const response = await axios.put('http://localhost:5005/store', 
-                { store: { presentations: updatePresentations } },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    },
-                }
-            );
-            if (response.status === 200) {
-                setPresentations(updatePresentations);
-            }
-        } catch (error) {
-            setErrorMsg(error.response.data.error);
-            setErrorOpen(true);
-        }
-    };
+    // const handleBackgroundChange = (style) => {
+    //     const updatedSlides = presentation.slides.map((slide, index) =>
+    //         index === currentSlideIndex ? { ...slide, backgroundStyle: style } : slide
+    //     );
+    //     const updatedPresentation = { ...presentation, slides: updatedSlides };
+    //     setPresentation(updatedPresentation);
+    //     updatePresentationBackend(updatedPresentation); // Save changes to backend
+    // };
 
     const handleSaveTitle = async () => {
         setTitle(newTitle);   
@@ -651,7 +661,18 @@ function Presentation({ token }) {
                                 </IconButton>
                             </ButtonContainer>
                         </Box>
-                        <Slide currentSlideIndex={currentSlideIndex} />
+                        {presentation.slides ? (
+                            <Slide 
+                                currentSlideIndex={currentSlideIndex} 
+                                slides={presentation.slides} 
+                                presentation={presentation}
+                                updatePresentationBackend={updatePresentationBackend}
+                                setPresentation={setPresentation} />
+                        ) : (
+                            <Typography variant="body1" align="center" sx={{ marginTop: 2 }}>
+                                Loading slides...
+                            </Typography>
+                        )}
                         <AddSlideButton aria-label="add" onClick={addNewSlide}>
                             <AddIcon sx={{ color: 'white' }}/>
                         </AddSlideButton>

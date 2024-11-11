@@ -174,6 +174,7 @@ function Dashboard({ token }) {
                 name: newPresentationName,
                 slides: [{
                     "id": 1,
+                    "backgroundPicker": "white",
                     "elements": []
                 }],
                 thumbnail: null

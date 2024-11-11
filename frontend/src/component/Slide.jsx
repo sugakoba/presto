@@ -1,12 +1,17 @@
-import React from 'react';
-import { Box, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import ColorizeIcon from '@mui/icons-material/Colorize';
+import BackgroundPicker from './BackgroundPicker';
 
 const SlideBox = styled(Box)`
     position: relative;
     width: 75%;
     aspect-ratio: 16 / 9;
     background-color: white;
+    background-size: cover;        
+    background-repeat: no-repeat;  
+    background-position: center;   
     border: 1px solid #dadada;
     display: flex;
     align-items: center;
@@ -31,14 +36,58 @@ const SlideNumber = styled(Box)`
     border-radius: 5px;
 `;
 
-const Slide = ({ currentSlideIndex }) => {
+const Slide = ({ currentSlideIndex, slides, presentation, updatePresentationBackend, setPresentation }) => {
+    const [isPickerOpen, setIsPickerOpen] = useState(false);
+    const currentSlide = slides[currentSlideIndex];
+    const [backgroundStyle, setBackgroundStyle] = useState(currentSlide?.backgroundStyle || 'white');
+
+    const handleOpenPicker = () => {
+        setIsPickerOpen(true);
+    };
+
+    const handleClosePicker = () => {
+        setIsPickerOpen(false);
+    };
+
+    const handleBackgroundChange = (style, isDefault) => {
+        setBackgroundStyle(style);
+        if (isDefault) {
+            const updatedSlides = slides.map((slide) => ({
+                ...slide,
+                backgroundStyle: style,
+            }));
+            const updatedPresentation = { ...presentation, slides: updatedSlides };
+            updatePresentationBackend(updatedPresentation);
+            setPresentation(updatedPresentation);
+        } else {
+            const updatedSlides = slides.map((slide, index) =>
+                index === currentSlideIndex ? { ...slide, backgroundStyle: style } : slide
+            );
+            const updatedPresentation = { ...presentation, slides: updatedSlides };
+            updatePresentationBackend(updatedPresentation);
+            setPresentation(updatedPresentation);
+        }
+        handleClosePicker();
+    };
+
     return (
-        <SlideBox>
-            <SlideNumber>
-                <Typography>{currentSlideIndex + 1}</Typography>
-            </SlideNumber>
-        {/* Content of the slide can be added here */}
-        </SlideBox>
+        <>
+            <SlideBox sx={{
+                background: currentSlide.backgroundStyle.includes('url(') ? `center / cover no-repeat ${currentSlide.backgroundStyle}` : currentSlide.backgroundStyle
+            }}>
+                <IconButton sx={{ position: 'absolute', top: '10px', left: '10px' }} onClick={handleOpenPicker}>
+                    <ColorizeIcon />
+                </IconButton>
+                <SlideNumber>
+                    <Typography>{currentSlideIndex + 1}</Typography>
+                </SlideNumber>
+            </SlideBox>
+            <BackgroundPicker
+                isOpen={isPickerOpen}
+                onClose={handleClosePicker}
+                onBackgroundChange={handleBackgroundChange}
+            />
+        </>
     );
 };
 
