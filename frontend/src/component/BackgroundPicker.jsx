@@ -15,11 +15,16 @@ const ModalContainer = styled(Box)`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 80%;
+    width: 50vw;
     background-color: #fff;
     padding: 20px;
     box-shadow: 24;
     border-radius: 10px;
+
+    @media (max-width: 600px) {
+        width: 80vw;
+        height: 50vh;
+    }
 `;
 
 const SaveButton = styled(Button)`
@@ -92,71 +97,73 @@ const BackgroundPicker = ({ isOpen, onClose, onBackgroundChange }) => {
     };    
 
     return (
-        <Modal open={isOpen} onClose={onClose}>
-            <ModalContainer>
-                <Typography variant="h6" gutterBottom>
-                    Choose Background Style
-                </Typography>
-                <RadioGroup value={backgroundStyle} onChange={handleBackgroundStyleChange}>
-                    <FormControlLabel value="solid" control={<Radio />} label="Solid Color" />
-                    <FormControlLabel value="gradient" control={<Radio />} label="Gradient" />
-                    <FormControlLabel value="image" control={<Radio />} label="Image" />
-                </RadioGroup>
+        <>
+            <Modal open={isOpen} onClose={onClose}>
+                <ModalContainer>
+                    <Typography variant="h6" gutterBottom>
+                        Choose Background Style
+                    </Typography>
+                    <RadioGroup value={backgroundStyle} onChange={handleBackgroundStyleChange}>
+                        <FormControlLabel value="solid" control={<Radio />} label="Solid Color" />
+                        <FormControlLabel value="gradient" control={<Radio />} label="Gradient" />
+                        <FormControlLabel value="image" control={<Radio />} label="Image" />
+                    </RadioGroup>
 
-                {backgroundStyle === 'solid' && (
-                    <Box sx={{ mt: 2 }} >
-                        <Typography variant="subtitle1" align='center' sx={{ mb: 2 }}>Choose Color</Typography>
-                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                            <ChromePicker color={solidColor} onChangeComplete={handleSolidColorChange}/>
+                    {backgroundStyle === 'solid' && (
+                        <Box sx={{ mt: 2 }} >
+                            <Typography variant="subtitle1" align='center' sx={{ mb: 2 }}>Choose Color</Typography>
+                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                <ChromePicker color={solidColor} onChangeComplete={handleSolidColorChange}/>
+                            </Box>
                         </Box>
-                    </Box>
-                )}
+                    )}
 
-                {backgroundStyle === 'gradient' && (
-                    <Box sx={{ mt: 2 }} >
-                        <Typography variant="subtitle1" align='center' sx={{ mb: 2 }}>Choose Gradient Colors</Typography>
-                        <PickerContainer>
-                            <ChromePicker color={gradientColor1} onChangeComplete={handleGradientColorChange1}/>
-                            <ChromePicker color={gradientColor2} onChangeComplete={handleGradientColorChange2}/>
-                        </PickerContainer>
-                    </Box>
-                )}
+                    {backgroundStyle === 'gradient' && (
+                        <Box sx={{ mt: 2 }} >
+                            <Typography variant="subtitle1" align='center' sx={{ mb: 2 }}>Choose Gradient Colors</Typography>
+                            <PickerContainer>
+                                <ChromePicker color={gradientColor1} onChangeComplete={handleGradientColorChange1}/>
+                                <ChromePicker color={gradientColor2} onChangeComplete={handleGradientColorChange2}/>
+                            </PickerContainer>
+                        </Box>
+                    )}
 
-                {backgroundStyle === 'image' && (
-                    <Box sx={{ mt: 2 }}>
-                        <SaveButton variant="contained" component="label">
-                            Upload Image
-                            <input type="file" hidden accept="image/*" onChange={handleImageUpload} />
+                    {backgroundStyle === 'image' && (
+                        <Box sx={{ mt: 2 }}>
+                            <SaveButton variant="contained" component="label">
+                                Upload Image
+                                <input type="file" hidden accept="image/*" onChange={handleImageUpload} />
+                            </SaveButton>
+                            {imageFile && <Typography variant="caption" ml={1}>Image uploaded</Typography>}
+                        </Box>
+                    )}
+
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={isDefault}
+                                    onChange={() => setIsDefault(!isDefault)}
+                                    sx={{ 
+                                        color: '#C46243',  
+                                        '&.Mui-checked': {
+                                            color: '#C46243',
+                                        }
+                                    }}
+                                />
+                            }
+                            label="Set as Default Style"
+                        />
+                        <SaveButton onClick={handleApply} variant="contained" startIcon={<CheckIcon />}>
+                            Apply
                         </SaveButton>
-                        {imageFile && <Typography variant="caption" ml={1}>Image uploaded</Typography>}
+                        <CancelButton onClick={onClose} variant="outlined" startIcon={<CloseIcon />}>
+                            Cancel
+                        </CancelButton>
                     </Box>
-                )}
-
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={isDefault}
-                                onChange={() => setIsDefault(!isDefault)}
-                                sx={{ 
-                                    color: '#C46243',  
-                                    '&.Mui-checked': {
-                                        color: '#C46243',
-                                    }
-                                }}
-                            />
-                        }
-                        label="Set as Default Style"
-                    />
-                    <SaveButton onClick={handleApply} variant="contained" startIcon={<CheckIcon />}>
-                        Apply
-                    </SaveButton>
-                    <CancelButton onClick={onClose} variant="outlined" startIcon={<CloseIcon />}>
-                        Cancel
-                    </CancelButton>
-                </Box>
-            </ModalContainer>
-        </Modal>
+                </ModalContainer>
+            </Modal>
+        </>
     );
 };
 

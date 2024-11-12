@@ -449,7 +449,7 @@ function Presentation({ token }) {
                 <IconButton 
                     onClick={toggleDrawer(true)} 
                     sx={{
-                        position: 'fixed',
+                        position: 'absolute',
                         top: '10px',
                         right: '10px',
                         display: { xs: 'block', sm: 'none' }
@@ -625,7 +625,7 @@ function Presentation({ token }) {
                         </List>
                     </SlideListContainer>
                     <SlideContainer>
-                        <Box sx={{ display: 'flex', marginLeft: '10px' }}>
+                        <Box sx={{ display: 'flex', margin: '10px' }}>
                             <IconButton aria-label="delete" onClick={deleteCurrentSlide} sx={{ marginRight: 'auto' }}>
                                 <DeleteIcon />
                             </IconButton>
@@ -649,31 +649,31 @@ function Presentation({ token }) {
                             <IconButton aria-label="presentation-preview" onClick={openPreview} sx={{ marginRight: 'auto' }}>
                                 <SlideshowIcon/>
                             </IconButton>
-
-                            <ButtonContainer>
-                                <IconButton onClick={handlePrevSlide} disabled={currentSlideIndex === 0}>
-                                    <KeyboardArrowLeftIcon />
-                                </IconButton>
-                                <IconButton
-                                    onClick={handleNextSlide}
-                                    disabled={presentation.slides && currentSlideIndex === presentation.slides.length - 1}
-                                >
-                                    <KeyboardArrowRightIcon />
-                                </IconButton>
-                            </ButtonContainer>
                         </Box>
-                        {presentation.slides ? (
-                            <Slide 
-                                currentSlideIndex={currentSlideIndex} 
-                                slides={presentation.slides} 
-                                presentation={presentation}
-                                updatePresentationBackend={updatePresentationBackend}
-                                setPresentation={setPresentation} />
-                        ) : (
-                            <Typography variant="body1" align="center" sx={{ marginTop: 2 }}>
-                                Loading slides...
-                            </Typography>
-                        )}
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignContent: 'center', width: '100%' }}>   
+                            <IconButton onClick={handlePrevSlide} disabled={currentSlideIndex === 0}>
+                                    <KeyboardArrowLeftIcon />
+                            </IconButton>
+                            {presentation.slides ? (
+                                <Slide 
+                                    currentSlideIndex={currentSlideIndex} 
+                                    slides={presentation.slides} 
+                                    presentation={presentation}
+                                    updatePresentationBackend={updatePresentationBackend}
+                                    setPresentation={setPresentation} />
+                            ) : (
+                                <Typography variant="body1" align="center" sx={{ marginTop: 2 }}>
+                                    Loading slides...
+                                </Typography>
+                            )}
+                            <IconButton
+                                onClick={handleNextSlide}
+                                disabled={presentation.slides && currentSlideIndex === presentation.slides.length - 1}
+                            >
+                                <KeyboardArrowRightIcon />
+                            </IconButton>
+                        </Box>
+
                         <AddSlideButton aria-label="add" onClick={addNewSlide}>
                             <AddIcon sx={{ color: 'white' }}/>
                         </AddSlideButton>

@@ -21,15 +21,6 @@ const DashboardContainer = styled(Box)`
     padding: 20px;
 `;
 
-const Sidebar = styled(Box)`
-    max-width: 250px;
-    padding-top: 40px;
-    padding-right: 20px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-`;
-
 const ContentArea = styled(Box)`
     flex: 1;
     background-color: white;
@@ -37,6 +28,7 @@ const ContentArea = styled(Box)`
     overflow: auto;
     border-radius: 20px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 35px;
 `;
 
 const CreateButton = styled(Button)`
@@ -67,6 +59,11 @@ const CreateModalContainer = styled(Box)`
     align-items: center;
     justify-content: center;
     flex-direction: column;
+
+    @media (max-width: 600px) {
+        width: 80vw;
+        height: 50vh;
+    }
 `;
 
 const CreateTitle = styled(Typography)`
@@ -149,6 +146,8 @@ function Dashboard({ token }) {
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setNewPresentationName('');
+        setNewDescription('');
+        setNewThumbnail('');
     };
 
     const handleCloseError = () => {
@@ -239,15 +238,15 @@ function Dashboard({ token }) {
     return (
         <>
             <DashboardContainer>
-                <Sidebar>
-                    <CreateButton variant="contained" onClick={handleOpenModal} startIcon={<AddIcon />}>
-                        New Presentation
-                    </CreateButton>
-                </Sidebar>
                 <ContentArea>
-                    <Typography variant="h4" gutterBottom>
-                        Presentations
-                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="h4" sx={{ mb: 2, fontSize: { xs: '1.6rem' } }}>
+                            Presentations
+                        </Typography>
+                        <CreateButton variant="contained" onClick={handleOpenModal} startIcon={<AddIcon />} sx={{ mb: 2, ml: 2 }}>
+                            New Presentation
+                        </CreateButton>
+                    </Box>
 
                     {shouldShowEmptyMessage ? (
                         <Typography variant="body1" color="textSecondary">
@@ -256,23 +255,23 @@ function Dashboard({ token }) {
                     ) : (
                         <Grid container spacing={2}>
                             {presentations.map((presentation) => (
-                                <Grid size={{ xs: 12, sm: 8, md: 4 }} key={presentation.id}>
+                                <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4 }} key={presentation.id}>
                                     <PresentationCard onClick={() => handlePresentationClick(presentation.id)}>
                                         {presentation.thumbnail ? (
                                             <CardMedia
-                                            component="img"
-                                            sx={{ maxHeight: 100, width: 'auto', height: '50%', margin: '7px' }}
-                                            image={presentation.thumbnail}
-                                            alt={presentation.name}
+                                                component="img"
+                                                sx={{ maxHeight: 100, width: 'auto', height: '50%', margin: '7px' }}
+                                                image={presentation.thumbnail}
+                                                alt={presentation.name}
                                             />
                                         ) : (
                                             <Thumbnail /> 
                                         )}
                                         <Typography variant="h6">{presentation.name}</Typography>
-                                        <Typography variant="body2" color="textSecondary">
+                                        <Typography variant="body2" sx={{ color: 'gray', fontSize: '0.8rem' }}>
                                             {presentation.description}
                                         </Typography>
-                                        <Typography variant="caption">
+                                        <Typography variant="body2" sx={{ fontSize: '0.7rem' }}>
                                             Slides: {presentation.slides.length}
                                         </Typography>
                                     </PresentationCard>
