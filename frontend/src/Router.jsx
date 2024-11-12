@@ -6,6 +6,7 @@ import Login from './page/Login';
 import Dashboard from './page/Dashboard';
 import Presentation from './page/Presentation';
 import LogoutButton from './component/LogoutButton';
+import Preview from './component/Preview';
 
 function MainApp() {
 
@@ -39,6 +40,7 @@ function MainApp() {
                 <Route path="/login" element={<Login token={token} handleSuccess={handleNewToken}/>} />
                 <Route path="/dashboard" element={<Dashboard token={token}/>}/>
                 <Route path="/dashboard/:presentationId" element={<Presentation token={token}/>} />
+                <Route path="/:presentationId/preview" element={<Preview token={token}/>} />
             </Routes>
             {token && (
                 <LogoutButton token={token} setToken={setToken} />

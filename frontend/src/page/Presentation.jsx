@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Box, Button, Typography, Modal, TextField, IconButton, List, Card, CardContent, Fab, Drawer, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
@@ -17,9 +17,11 @@ import {
     TextFields as TextIcon,
     VideoCameraBack as VideoIcon,
     Code as CodeIcon,
+    Slideshow as SlideshowIcon
   } from '@mui/icons-material';
 import ErrorPopUp from "../component/ErrorPopUp";
 import Slide from "../component/Slide";
+import Preview from '../component/Preview';
 
 const PresentationContainer = styled(Box)`
     background-color: #fbf1d7;
@@ -418,6 +420,11 @@ function Presentation({ token }) {
         }
     };
 
+    const openPreview = () => {
+        // Open the new route in a new tab
+        window.open(`/${presentationId}/preview`, "_blank");
+    };    
+
     const handleNewText = async () => {
 
     };
@@ -639,6 +646,9 @@ function Presentation({ token }) {
                                 <CodeIcon />
                             </IconButton>
 {/* End here */}
+                            <IconButton aria-label="presentation-preview" onClick={openPreview} sx={{ marginRight: 'auto' }}>
+                                <SlideshowIcon/>
+                            </IconButton>
 
                             <ButtonContainer>
                                 <IconButton onClick={handlePrevSlide} disabled={currentSlideIndex === 0}>
