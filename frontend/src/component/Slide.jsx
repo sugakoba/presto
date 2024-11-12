@@ -18,6 +18,8 @@ const SlideBox = styled(Box)`
     justify-content: center;
     margin: auto;
     margin-top: 0;
+    opacity: ${(props) => (props.fade ? 0 : 1)};
+    transition: opacity 0.5s ease-in-out;
 `;
 
 const SlideNumber = styled(Box)`
@@ -36,7 +38,7 @@ const SlideNumber = styled(Box)`
     border-radius: 5px;
 `;
 
-const Slide = ({ currentSlideIndex, slides, presentation, updatePresentationBackend, setPresentation }) => {
+const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentationBackend, setPresentation }) => {
     const [isPickerOpen, setIsPickerOpen] = useState(false);
     const currentSlide = slides[currentSlideIndex];
     const [backgroundStyle, setBackgroundStyle] = useState(currentSlide?.backgroundStyle || 'white');
@@ -72,9 +74,12 @@ const Slide = ({ currentSlideIndex, slides, presentation, updatePresentationBack
 
     return (
         <>
-            <SlideBox sx={{
-                background: currentSlide.backgroundStyle.includes('url(') ? `center / cover no-repeat ${currentSlide.backgroundStyle}` : currentSlide.backgroundStyle
-            }}>
+            <SlideBox 
+                fade={fade} 
+                sx={{
+                    background: currentSlide.backgroundStyle.includes('url(') ? `center / cover no-repeat ${currentSlide.backgroundStyle}` : currentSlide.backgroundStyle
+                }}
+            >
                 <IconButton 
                     onClick={handleOpenPicker}
                     sx={{ position: 'absolute', top: '10px', left: '10px', backgroundColor: 'white', 

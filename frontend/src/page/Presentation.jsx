@@ -196,6 +196,7 @@ function Presentation({ token }) {
     const [errorMsg, setErrorMsg] = useState('');
     const [isErrorOpen, setErrorOpen] = useState(false);
     const [isDrawerOpen, setDrawerOpen] = useState(false);
+    const [fade, setFade] = useState(false); 
     const [toolExpand, setToolExpand] = useState(true);
     const inputRef = useRef(null);
     const navigate = useNavigate();
@@ -246,6 +247,15 @@ function Presentation({ token }) {
     const updateSlideIndex = (index) => {
         setCurrentSlideIndex(index);
         navigate(`/dashboard/${presentationId}/${index + 1}`);
+    };
+
+    const handleSlideChange = (newIndex) => {
+        setFade(true); 
+        setTimeout(() => {
+            setCurrentSlideIndex(newIndex); 
+            setFade(false); 
+            navigate(`/dashboard/${presentationId}/${newIndex + 1}`, { replace: true });
+        }, 500); 
     };
 
     const updatePresentationBackend = async (updatedPresentation) => {
@@ -321,16 +331,26 @@ function Presentation({ token }) {
         updatePresentationBackend(updatedPresentation);
     };
 
+    // const handleNextSlide = () => {
+    //     if (currentSlideIndex < presentation.slides.length - 1) {
+    //         updateSlideIndex(currentSlideIndex + 1);
+    //     }
+    // };
+
+    // const handlePrevSlide = () => {
+    //     if (currentSlideIndex > 0) {
+    //         updateSlideIndex(currentSlideIndex - 1);
+    //     }
+    // };
+
     const handleNextSlide = () => {
-        if (currentSlideIndex < presentation.slides.length - 1) {
-            updateSlideIndex(currentSlideIndex + 1);
-        }
+        const newIndex = (currentSlideIndex + 1) % presentation.slides.length;
+        handleSlideChange(newIndex);
     };
 
     const handlePrevSlide = () => {
-        if (currentSlideIndex > 0) {
-            updateSlideIndex(currentSlideIndex - 1);
-        }
+        const newIndex = (currentSlideIndex - 1 + presentation.slides.length) % presentation.slides.length;
+        handleSlideChange(newIndex);
     };
 
     const handleThumbnailUpload = async (event) => {
@@ -695,69 +715,73 @@ function Presentation({ token }) {
                         </List>
                     </SlideListContainer>
                     <SlideContainer>
-                        <Box sx={{ display: 'flex', margin: '10px' }}>
-                            <IconButton aria-label="delete" onClick={deleteCurrentSlide} sx={{ marginRight: 'auto' }}>
-                                <DeleteIcon />
-                            </IconButton>
+                        {presentation.slides && currentSlideIndex !== null ? (
+                            <Box sx={{ display: 'flex', margin: '10px' }}>
+                                <IconButton aria-label="delete" onClick={deleteCurrentSlide} sx={{ marginRight: 'auto' }}>
+                                    <DeleteIcon />
+                                </IconButton>
 {/* Section 3: Edit here */}
+                                    <Box display="flex" alignItems="center">
+                                        <Button
+                                            onClick={handleToolExpand}
+                                            variant="contained"
+                                            startIcon={toolExpand ? <ArrowBackIcon /> : <ArrowForwardIcon />}
+                                            sx={{ marginRight: 1 }}
+                                            size="small"
+                                        >
+                                            {toolExpand ? 'Hide' : 'Tool'}
+                                        </Button>
 
-                            {currentSlideIndex !== null && (
-                                <Box display="flex" alignItems="center">
-                                    <Button
-                                        onClick={handleToolExpand}
-                                        variant="contained"
-                                        startIcon={toolExpand ? <ArrowBackIcon /> : <ArrowForwardIcon />}
-                                        sx={{ marginRight: 1 }}
-                                        size="small"
-                                    >
-                                        {toolExpand ? 'Hide' : 'Tool'}
-                                    </Button>
+                                        {toolExpand && (
+                                            <Box display ="flex" gap={0}> 
+                                                <IconButton aria-label="textInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                                    <TextIcon />
+                                                </IconButton>
 
-                                    {toolExpand && (
-                                        <Box display ="flex" gap={0}> 
-                                            <IconButton aria-label="textInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
-                                                <TextIcon />
-                                            </IconButton>
+                                                <IconButton aria-label="imageInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                                    <ImageIcon />
+                                                </IconButton>
 
-                                            <IconButton aria-label="imageInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
-                                                <ImageIcon />
-                                            </IconButton>
+                                                <IconButton aria-label="videoInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                                    <VideoIcon />
+                                                </IconButton>
 
-                                            <IconButton aria-label="videoInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
-                                                <VideoIcon />
-                                            </IconButton>
-
-                                            <IconButton aria-label="codeInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
-                                                <CodeIcon />
-                                            </IconButton>
-                                        </Box>
-                                    )}
-                                </Box>
-                            )}
+                                                <IconButton aria-label="codeInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                                    <CodeIcon />
+                                                </IconButton>
+                                            </Box>
+                                        )}
+                                    </Box>
 {/* End here */}
-                        </Box>
+                            </Box>
+                        ) : (
+                            <Typography variant="body1" sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                                Choose a slide to start editing!
+                            </Typography>
+                        )}
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignContent: 'center', width: '100%' }}>   
-                            <IconButton onClick={handlePrevSlide} disabled={currentSlideIndex === 0}>
-                                    <KeyboardArrowLeftIcon />
-                            </IconButton>
-                            {presentation.slides && currentSlideIndex !== null ? (
+                            {presentation.slides && presentation.slides.length >= 2 && currentSlideIndex !== null && (
+                                <IconButton onClick={handlePrevSlide} disabled={currentSlideIndex === 0}>
+                                        <KeyboardArrowLeftIcon />
+                                </IconButton>
+                            )}
+                            {presentation.slides && currentSlideIndex !== null && (
                                 <Slide 
+                                    fade={fade}
                                     currentSlideIndex={currentSlideIndex} 
                                     slides={presentation.slides} 
                                     presentation={presentation}
                                     updatePresentationBackend={updatePresentationBackend}
                                     setPresentation={setPresentation} />
-                            ) : (
-                                <Typography variant="body1" align="center" sx={{ marginTop: 2 }}>
-                                    Choose a slide to begin editing!
-                                </Typography>
                             )}
-                            <IconButton
-                                onClick={handleNextSlide}
-                                disabled={presentation.slides && currentSlideIndex === presentation.slides.length - 1}
-                            >
-                                <KeyboardArrowRightIcon />
-                            </IconButton>
+                            {presentation.slides && presentation.slides.length >= 2 && currentSlideIndex !== null && (
+                                <IconButton
+                                    onClick={handleNextSlide}
+                                    disabled={presentation.slides && currentSlideIndex === presentation.slides.length - 1}
+                                >
+                                    <KeyboardArrowRightIcon />
+                                </IconButton>
+                            )}
                         </Box>
 
                         <AddSlideButton aria-label="add" onClick={addNewSlide}>
