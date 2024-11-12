@@ -7,7 +7,7 @@ import { ChromePicker } from 'react-color';
 
 const PickerContainer = styled(Box)`
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
 `
 
 const ModalContainer = styled(Box)`
@@ -15,7 +15,7 @@ const ModalContainer = styled(Box)`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 600px;
+    width: 80%;
     background-color: #fff;
     padding: 20px;
     box-shadow: 24;
@@ -116,8 +116,8 @@ const BackgroundPicker = ({ isOpen, onClose, onBackgroundChange }) => {
                     <Box sx={{ mt: 2 }} >
                         <Typography variant="subtitle1" align='center' sx={{ mb: 2 }}>Choose Gradient Colors</Typography>
                         <PickerContainer>
-                            <ChromePicker color={gradientColor1} onChangeComplete={handleGradientColorChange1} />
-                            <ChromePicker color={gradientColor2} onChangeComplete={handleGradientColorChange2} />
+                            <ChromePicker color={gradientColor1} onChangeComplete={handleGradientColorChange1}/>
+                            <ChromePicker color={gradientColor2} onChangeComplete={handleGradientColorChange2}/>
                         </PickerContainer>
                     </Box>
                 )}
