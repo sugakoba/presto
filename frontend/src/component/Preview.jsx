@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
@@ -36,7 +36,14 @@ const SlideNumber = styled(Box)`
 const Preview = ({ token }) => {
     const [slides, setSlides] = useState([]);
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-    const { presentationId } = useParams();
+    const { presentationId, slideNumber } = useParams();
+    const currentSlide = slides[currentSlideIndex];
+    const navigate = useNavigate();
+
+    const updateSlideIndex = (index) => {
+        setCurrentSlideIndex(index);
+        navigate(`/dashboard/${presentationId}/preview/${index + 1}`, { replace: true });
+    };
 
     const fetchSlides = async () => {
         try {
@@ -59,23 +66,26 @@ const Preview = ({ token }) => {
         }
     };
 
+    const handleNextSlide = () => {
+        const newIndex = currentSlideIndex < slides.length - 1 ? currentSlideIndex + 1 : 0;
+        updateSlideIndex(newIndex);
+        
+    };
+    
+    const handlePrevSlide = () => {
+        const newIndex = currentSlideIndex > 0 ? currentSlideIndex - 1 : slides.length - 1;
+        updateSlideIndex(newIndex);
+    };    
+
     useEffect(() => {
         fetchSlides();
     }, []);
 
-    const handleNextSlide = () => {
-        setCurrentSlideIndex((prevIndex) =>
-            prevIndex < slides.length - 1 ? prevIndex + 1 : 0
-        );
-    };
-
-    const handlePrevSlide = () => {
-        setCurrentSlideIndex((prevIndex) =>
-            prevIndex > 0 ? prevIndex - 1 : slides.length - 1
-        );
-    };
-
-    const currentSlide = slides[currentSlideIndex];
+    useEffect(() => {
+        if (slideNumber !== null && slides && slides[Number(slideNumber) - 1]) {
+            setCurrentSlideIndex(Number(slideNumber) - 1);
+        }
+    }, [slides, slideNumber]);
 
     return (
         <>

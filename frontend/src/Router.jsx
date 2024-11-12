@@ -39,8 +39,8 @@ function MainApp() {
                 <Route path="/register" element={<Register token={token} handleSuccess={handleNewToken} />} />
                 <Route path="/login" element={<Login token={token} handleSuccess={handleNewToken}/>} />
                 <Route path="/dashboard" element={<Dashboard token={token}/>}/>
-                <Route path="/dashboard/:presentationId" element={<Presentation token={token}/>} />
-                <Route path="/:presentationId/preview" element={<Preview token={token}/>} />
+                <Route path="/dashboard/:presentationId/:slideNumber?" element={<Presentation token={token}/>} />
+                <Route path="/dashboard/:presentationId/preview/:slideNumber?" element={<Preview token={token}/>} />
             </Routes>
             {token && (
                 <LogoutButton token={token} setToken={setToken} />

@@ -23,7 +23,6 @@ import {
   } from '@mui/icons-material';
 import ErrorPopUp from "../component/ErrorPopUp";
 import Slide from "../component/Slide";
-import Preview from '../component/Preview';
 
 const PresentationContainer = styled(Box)`
     background-color: #fbf1d7;
@@ -39,7 +38,7 @@ const TitleContainer = styled(Box)`
     align-items: center;
     margin-bottom: 10px;
     transform: translateX(-50%); 
-    @media (max-width: 600px) {
+    @media (max-width: 800px) {
         position: static; 
         transform: none;
     }
@@ -187,13 +186,13 @@ const AddElementInput = styled(TextField)({
 function Presentation({ token }) {
     const [presentation, setPresentation] = useState({});
     const [presentations, setPresentations] = useState([]);
-    const { presentationId } = useParams();
+    const { presentationId, slideNumber } = useParams();
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [title, setTitle] = useState(presentation.name);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isTextModalOpen, setIsTextModalOpen] = useState(false);
     const [newTitle, setNewTitle] = useState(title);
-    const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+    const [currentSlideIndex, setCurrentSlideIndex] = useState(Number(slideNumber) - 1 || null);
     const [errorMsg, setErrorMsg] = useState('');
     const [isErrorOpen, setErrorOpen] = useState(false);
     const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -244,6 +243,11 @@ function Presentation({ token }) {
         setShowDeleteConfirmation(false);
     };
 
+    const updateSlideIndex = (index) => {
+        setCurrentSlideIndex(index);
+        navigate(`/dashboard/${presentationId}/${index + 1}`);
+    };
+
     const updatePresentationBackend = async (updatedPresentation) => {
         try {
             const updatePresentations = presentations.map((presentation) =>
@@ -283,19 +287,19 @@ function Presentation({ token }) {
         const updatedSlides = [...presentation.slides, newSlide];
         const updatedPresentation = { ...presentation, slides: updatedSlides };
         setPresentation(updatedPresentation);
-        setCurrentSlideIndex(updatedSlides.length - 1);
+        updateSlideIndex(updatedSlides.length - 1);
         updatePresentationBackend(updatedPresentation);
     };
 
     const handleNextSlide = () => {
         if (currentSlideIndex < presentation.slides.length - 1) {
-            setCurrentSlideIndex(currentSlideIndex + 1);
+            updateSlideIndex(currentSlideIndex + 1);
         }
     };
 
     const handlePrevSlide = () => {
         if (currentSlideIndex > 0) {
-            setCurrentSlideIndex(currentSlideIndex - 1);
+            updateSlideIndex(currentSlideIndex - 1);
         }
     };
 
@@ -369,7 +373,7 @@ function Presentation({ token }) {
         const updatedSlides = presentation.slides.filter((_, index) => index !== currentSlideIndex);
         const updatedPresentation = { ...presentation, slides: updatedSlides };
         setPresentation(updatedPresentation);
-        setCurrentSlideIndex(Math.max(currentSlideIndex - 1, 0));
+        updateSlideIndex(Math.max(currentSlideIndex - 1, 0));
         updatePresentationBackend(updatedPresentation);
     };
 
@@ -428,8 +432,8 @@ function Presentation({ token }) {
     };
 
     const openPreview = () => {
-        // Open the new route in a new tab
-        window.open(`/${presentationId}/preview`, "_blank");
+        const slidePreviewNum = (slideNumber || 1);
+        window.open(`/dashboard/${presentationId}/preview/${slidePreviewNum}`, "_blank");
     };    
 
     const handleNewText = async () => {
@@ -450,6 +454,12 @@ function Presentation({ token }) {
         }
     }, [isModalOpen]);
 
+    useEffect(() => {
+        if (slideNumber !== null && presentation.slides && presentation.slides[Number(slideNumber) - 1]) {
+            setCurrentSlideIndex(Number(slideNumber) - 1);
+        }
+    }, [presentation.slides, slideNumber]);
+
     return (
         <>
             <PresentationContainer>
@@ -459,8 +469,12 @@ function Presentation({ token }) {
                         position: 'absolute',
                         top: '10px',
                         right: '10px',
-                        display: { xs: 'block', sm: 'none' }
-                    }}>
+                        display: 'none', 
+                        '@media (max-width: 800px)': {
+                            display: 'block', 
+                        },
+                    }} 
+                >
                     <MenuIcon />
                 </IconButton>
                 <Drawer anchor="right" open={isDrawerOpen} onClose={toggleDrawer(false)}>
@@ -469,13 +483,19 @@ function Presentation({ token }) {
                             <ListItemIcon>
                                 <ArrowBackIcon />
                             </ListItemIcon>
-                            <ListItemText primary="Back" />
+                            <ListItemText primary="Back to Dashboard" />
                         </ListItemButton>
                         <ListItemButton variant="outlined" onClick={handleDeleteClick} fullWidth>
                             <ListItemIcon>
                                 <DeleteIcon />
                             </ListItemIcon>
                             <ListItemText primary="Delete" />
+                        </ListItemButton>
+                        <ListItemButton variant="outlined" onClick={openPreview} fullWidth>
+                            <ListItemIcon>
+                                <SlideshowIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Preview" />
                         </ListItemButton>
                         <ListItemButton variant="outlined" component="label" fullWidth>
                             <ListItemIcon>
@@ -491,7 +511,14 @@ function Presentation({ token }) {
                         </ListItemButton>
                     </DrawerContent>
                 </Drawer>
-                <ButtonContainer sx={{ display: { xs: 'none', sm: 'flex' }}}>
+                <ButtonContainer 
+                    sx={{
+                        display: 'flex', 
+                        '@media (max-width: 800px)': {
+                            display: 'none',
+                        },
+                    }}
+                >
                     <SaveButton variant="contained" onClick={handleBack} startIcon={<ArrowBackIcon />}>
                         Back
                     </SaveButton>
@@ -507,7 +534,17 @@ function Presentation({ token }) {
                         <EditOutlinedIcon />
                     </IconButton>
                 </TitleContainer>
-                <ButtonContainer sx={{ display: { xs: 'none', sm: 'flex' }}}>
+                <ButtonContainer 
+                    sx={{
+                        display: 'flex', 
+                        '@media (max-width: 800px)': {
+                            display: 'none',
+                        },
+                    }}
+                >
+                    <SaveButton aria-label="presentation-preview" variant="contained" onClick={openPreview} startIcon={<SlideshowIcon />}>
+                        Preview
+                    </SaveButton>
                     <CancelButton variant="outlined" component="label" startIcon={<ImageIcon />}>
                         Change Thumbnail
                         <input
@@ -622,7 +659,7 @@ function Presentation({ token }) {
                                 <SlideCard
                                     key={slide.id}
                                     className={index === currentSlideIndex ? 'Mui-selected' : ''}
-                                    onClick={() => setCurrentSlideIndex(index)}
+                                    onClick={() => updateSlideIndex(index)}
                                 >
                                     <CardContent>
                                         <Typography variant="subtitle1">{index + 1}</Typography>
@@ -637,49 +674,44 @@ function Presentation({ token }) {
                                 <DeleteIcon />
                             </IconButton>
 {/* Section 3: Edit here */}
+                            <Box display="flex" alignItems="center">
+                                <Button
+                                    onClick={handleToolExpand}
+                                    variant="contained"
+                                    startIcon={toolExpand ? <ArrowBackIcon /> : <ArrowForwardIcon />}
+                                    sx={{ marginRight: 1 }}
+                                    size="small"
+                                >
+                                    {toolExpand ? 'Hide' : 'Tool'}
+                                </Button>
 
-                        <Box display="flex" alignItems="center">
-                            <Button
-                                onClick={handleToolExpand}
-                                variant="contained"
-                                startIcon={toolExpand ? <ArrowBackIcon /> : <ArrowForwardIcon />}
-                                sx={{ marginRight: 1 }}
-                                size="small"
-                            >
-                                {toolExpand ? 'Hide' : 'Tool'}
-                            </Button>
+                                {toolExpand && (
+                                    <Box display ="flex" gap={0}> 
+                                        <IconButton aria-label="textInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                            <TextIcon />
+                                        </IconButton>
 
-                            {toolExpand && (
-                                <Box display ="flex" gap={0}> 
-                                    <IconButton aria-label="textInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
-                                        <TextIcon />
-                                    </IconButton>
+                                        <IconButton aria-label="imageInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                            <ImageIcon />
+                                        </IconButton>
 
-                                    <IconButton aria-label="imageInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
-                                        <ImageIcon />
-                                    </IconButton>
+                                        <IconButton aria-label="videoInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                            <VideoIcon />
+                                        </IconButton>
 
-                                    <IconButton aria-label="videoInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
-                                        <VideoIcon />
-                                    </IconButton>
-
-                                    <IconButton aria-label="codeInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
-                                        <CodeIcon />
-                                    </IconButton>
-                                </Box>
-                            )}
-                        </Box>
-
+                                        <IconButton aria-label="codeInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                            <CodeIcon />
+                                        </IconButton>
+                                    </Box>
+                                )}
+                            </Box>
 {/* End here */}
-                            <IconButton aria-label="presentation-preview" onClick={openPreview} sx={{ marginRight: 'auto' }}>
-                                <SlideshowIcon/>
-                            </IconButton>
                         </Box>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignContent: 'center', width: '100%' }}>   
                             <IconButton onClick={handlePrevSlide} disabled={currentSlideIndex === 0}>
                                     <KeyboardArrowLeftIcon />
                             </IconButton>
-                            {presentation.slides ? (
+                            {presentation.slides && currentSlideIndex !== null ? (
                                 <Slide 
                                     currentSlideIndex={currentSlideIndex} 
                                     slides={presentation.slides} 
@@ -688,7 +720,7 @@ function Presentation({ token }) {
                                     setPresentation={setPresentation} />
                             ) : (
                                 <Typography variant="body1" align="center" sx={{ marginTop: 2 }}>
-                                    Loading slides...
+                                    Choose a slide to begin editing!
                                 </Typography>
                             )}
                             <IconButton
