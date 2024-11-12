@@ -278,6 +278,36 @@ function Presentation({ token }) {
     **********************************
     **********************************/
 
+    
+    const handleNewText = async () => {
+        
+
+        const newText = {
+            id: presentation.slides[currentSlideIndex].elements.length + 1,
+            type: "text",
+            height: textAreaHeight,
+            width: textAreaWidth,
+            text: text,
+            size: textSize,
+            color: textColor,
+            xpos: 0,
+            ypos: 0
+        }
+
+        const updatedElements = [...presentation.slides[currentSlideIndex].elements, newText];
+        const updatedSlides = presentation.slides.map((slide, index) =>
+            index === currentSlideIndex
+                ? { ...slide, elements: updatedElements }
+                : slide
+        );
+
+        const updatedPresentation = { ...presentation, slides: updatedSlides };
+
+        setPresentation(updatedPresentation);
+        updatePresentationBackend(updatedPresentation);
+        handleCloseTextModal();
+    };
+
     const addNewSlide = async () => {
         const newSlide = {
             id: presentation.slides[presentation.slides.length - 1].id + 1,
@@ -435,10 +465,6 @@ function Presentation({ token }) {
         const slidePreviewNum = (slideNumber || 1);
         window.open(`/dashboard/${presentationId}/preview/${slidePreviewNum}`, "_blank");
     };    
-
-    const handleNewText = async () => {
-
-    };
 
     const toggleDrawer = (open) => (event) => {
         setDrawerOpen(open);
@@ -674,37 +700,40 @@ function Presentation({ token }) {
                                 <DeleteIcon />
                             </IconButton>
 {/* Section 3: Edit here */}
-                            <Box display="flex" alignItems="center">
-                                <Button
-                                    onClick={handleToolExpand}
-                                    variant="contained"
-                                    startIcon={toolExpand ? <ArrowBackIcon /> : <ArrowForwardIcon />}
-                                    sx={{ marginRight: 1 }}
-                                    size="small"
-                                >
-                                    {toolExpand ? 'Hide' : 'Tool'}
-                                </Button>
 
-                                {toolExpand && (
-                                    <Box display ="flex" gap={0}> 
-                                        <IconButton aria-label="textInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
-                                            <TextIcon />
-                                        </IconButton>
+                            {currentSlideIndex !== null && (
+                                <Box display="flex" alignItems="center">
+                                    <Button
+                                        onClick={handleToolExpand}
+                                        variant="contained"
+                                        startIcon={toolExpand ? <ArrowBackIcon /> : <ArrowForwardIcon />}
+                                        sx={{ marginRight: 1 }}
+                                        size="small"
+                                    >
+                                        {toolExpand ? 'Hide' : 'Tool'}
+                                    </Button>
 
-                                        <IconButton aria-label="imageInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
-                                            <ImageIcon />
-                                        </IconButton>
+                                    {toolExpand && (
+                                        <Box display ="flex" gap={0}> 
+                                            <IconButton aria-label="textInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                                <TextIcon />
+                                            </IconButton>
 
-                                        <IconButton aria-label="videoInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
-                                            <VideoIcon />
-                                        </IconButton>
+                                            <IconButton aria-label="imageInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                                <ImageIcon />
+                                            </IconButton>
 
-                                        <IconButton aria-label="codeInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
-                                            <CodeIcon />
-                                        </IconButton>
-                                    </Box>
-                                )}
-                            </Box>
+                                            <IconButton aria-label="videoInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                                <VideoIcon />
+                                            </IconButton>
+
+                                            <IconButton aria-label="codeInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                                <CodeIcon />
+                                            </IconButton>
+                                        </Box>
+                                    )}
+                                </Box>
+                            )}
 {/* End here */}
                         </Box>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignContent: 'center', width: '100%' }}>   
