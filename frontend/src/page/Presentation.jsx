@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { Box, Button, Typography, Modal, TextField, IconButton, List, Card, CardContent, Fab, Drawer, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Box, Button, Typography, Modal, TextField, IconButton, List, Card, CardContent, Fab, Drawer, ListItemButton, ListItemIcon, ListItemText, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import axios from 'axios';
 import {
     EditOutlined as EditOutlinedIcon,
@@ -10,6 +10,7 @@ import {
     KeyboardArrowLeft as KeyboardArrowLeftIcon,
     KeyboardArrowRight as KeyboardArrowRightIcon,
     ArrowBack as ArrowBackIcon,
+    ArrowForward as ArrowForwardIcon,
     Add as AddIcon,
     Delete as DeleteIcon,
     Image as ImageIcon,
@@ -17,7 +18,8 @@ import {
     TextFields as TextIcon,
     VideoCameraBack as VideoIcon,
     Code as CodeIcon,
-    Slideshow as SlideshowIcon
+    Slideshow as SlideshowIcon,
+    ExpandMore as ExpandMoreIcon
   } from '@mui/icons-material';
 import ErrorPopUp from "../component/ErrorPopUp";
 import Slide from "../component/Slide";
@@ -195,6 +197,7 @@ function Presentation({ token }) {
     const [errorMsg, setErrorMsg] = useState('');
     const [isErrorOpen, setErrorOpen] = useState(false);
     const [isDrawerOpen, setDrawerOpen] = useState(false);
+    const [toolExpand, setToolExpand] = useState(true);
     const inputRef = useRef(null);
     const navigate = useNavigate();
 
@@ -203,6 +206,10 @@ function Presentation({ token }) {
     const [text, setText] = useState('');
     const [textSize, setTextSize] = useState('0');
     const [textColor, setTextColor] = useState('0');
+
+    const handleToolExpand = () => {
+        setToolExpand(!toolExpand);
+    }
 
     const handleBack = () => {
         navigate('/dashboard');
@@ -630,21 +637,39 @@ function Presentation({ token }) {
                                 <DeleteIcon />
                             </IconButton>
 {/* Section 3: Edit here */}
-                            <IconButton aria-label="textInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
-                                <TextIcon />
-                            </IconButton>
 
-                            <IconButton aria-label="imageInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
-                                <ImageIcon />
-                            </IconButton>
+                        <Box display="flex" alignItems="center">
+                            <Button
+                                onClick={handleToolExpand}
+                                variant="contained"
+                                startIcon={toolExpand ? <ArrowBackIcon /> : <ArrowForwardIcon />}
+                                sx={{ marginRight: 1 }}
+                                size="small"
+                            >
+                                {toolExpand ? 'Hide' : 'Tool'}
+                            </Button>
 
-                            <IconButton aria-label="videoInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
-                                <VideoIcon />
-                            </IconButton>
+                            {toolExpand && (
+                                <Box display ="flex" gap={0}> 
+                                    <IconButton aria-label="textInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                        <TextIcon />
+                                    </IconButton>
 
-                            <IconButton aria-label="codeInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
-                                <CodeIcon />
-                            </IconButton>
+                                    <IconButton aria-label="imageInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                        <ImageIcon />
+                                    </IconButton>
+
+                                    <IconButton aria-label="videoInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                        <VideoIcon />
+                                    </IconButton>
+
+                                    <IconButton aria-label="codeInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                        <CodeIcon />
+                                    </IconButton>
+                                </Box>
+                            )}
+                        </Box>
+
 {/* End here */}
                             <IconButton aria-label="presentation-preview" onClick={openPreview} sx={{ marginRight: 'auto' }}>
                                 <SlideshowIcon/>
