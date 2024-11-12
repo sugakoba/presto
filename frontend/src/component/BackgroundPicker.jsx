@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Modal, Button, Typography, Radio, RadioGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import CheckIcon from '@mui/icons-material/Check';
@@ -44,6 +44,12 @@ const BackgroundPicker = ({ isOpen, onClose, onBackgroundChange }) => {
     const [imageFile, setImageFile] = useState(null);
     const [isDefault, setIsDefault] = useState(false);
 
+    useEffect(() => {
+        if (isOpen) {
+            setImageFile(null); 
+        }
+    }, [isOpen]);
+
     const handleBackgroundStyleChange = (event) => {
         setBackgroundStyle(event.target.value);
     };
@@ -73,11 +79,6 @@ const BackgroundPicker = ({ isOpen, onClose, onBackgroundChange }) => {
             reader.readAsDataURL(file); 
         }
     };
-
-    const handleDefault = () => {
-        handleApply();
-        setIsDefault();
-    }
 
     const handleApply = () => {
         if (backgroundStyle === 'solid') {
@@ -127,7 +128,7 @@ const BackgroundPicker = ({ isOpen, onClose, onBackgroundChange }) => {
                             Upload Image
                             <input type="file" hidden accept="image/*" onChange={handleImageUpload} />
                         </SaveButton>
-                        {imageFile && <Typography variant="caption" mt={1}>Image uploaded</Typography>}
+                        {imageFile && <Typography variant="caption" ml={1}>Image uploaded</Typography>}
                     </Box>
                 )}
 

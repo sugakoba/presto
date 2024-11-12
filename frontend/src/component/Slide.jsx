@@ -56,7 +56,7 @@ const Slide = ({ currentSlideIndex, slides, presentation, updatePresentationBack
                 ...slide,
                 backgroundStyle: style,
             }));
-            const updatedPresentation = { ...presentation, slides: updatedSlides };
+            const updatedPresentation = { ...presentation, defaultStyle: style, slides: updatedSlides };
             updatePresentationBackend(updatedPresentation);
             setPresentation(updatedPresentation);
         } else {
@@ -75,7 +75,13 @@ const Slide = ({ currentSlideIndex, slides, presentation, updatePresentationBack
             <SlideBox sx={{
                 background: currentSlide.backgroundStyle.includes('url(') ? `center / cover no-repeat ${currentSlide.backgroundStyle}` : currentSlide.backgroundStyle
             }}>
-                <IconButton sx={{ position: 'absolute', top: '10px', left: '10px' }} onClick={handleOpenPicker}>
+                <IconButton 
+                    onClick={handleOpenPicker}
+                    sx={{ position: 'absolute', top: '10px', left: '10px', backgroundColor: 'white', 
+                        '&:hover': {
+                            backgroundColor: '#fbf1d7',
+                        }
+                    }} >
                     <ColorizeIcon />
                 </IconButton>
                 <SlideNumber>

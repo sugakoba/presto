@@ -189,9 +189,10 @@ function Dashboard({ token }) {
                 id: newId,
                 description: newDescription,
                 name: newPresentationName,
+                defaultStyle: "white",
                 slides: [{
                     "id": 1,
-                    "backgroundPicker": "white",
+                    "backgroundStyle": "white",
                     "elements": []
                 }],
                 thumbnail: newThumbnail
@@ -303,7 +304,7 @@ function Dashboard({ token }) {
                             variant="outlined"
                             sx={{ mb: 1 }}
                         />
-                        <CancelButton variant="outlined" component="label" startIcon={<PanoramaIcon />} sx={{ mb: 2 }}>
+                        <CancelButton variant="outlined" component="label" startIcon={<PanoramaIcon />} sx={{ mb: 0.5 }}>
                             Choose Thumbnail
                             <input
                                 type="file"
@@ -312,14 +313,15 @@ function Dashboard({ token }) {
                                 onChange={handleThumbnailUpload}
                             />
                         </CancelButton>
-                        <div>
+                        {newThumbnail && <Typography variant="caption" ml={1}>Image uploaded</Typography>}
+                        <Box sx={{ mt: 1 }}>
                             <CreateButton variant="contained" onClick={handleCreatePresentation} startIcon={<AddIcon />}>
                                 Create
                             </CreateButton>
                             <CancelButton variant="outlined" onClick={handleCloseModal} startIcon={<CloseIcon />}>
                                 Cancel
                             </CancelButton>
-                        </div>
+                        </Box>
                     </CreateModalContainer>
                 </Modal>
             </DashboardContainer>

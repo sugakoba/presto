@@ -268,7 +268,7 @@ function Presentation({ token }) {
     const addNewSlide = async () => {
         const newSlide = {
             id: presentation.slides[presentation.slides.length - 1].id + 1,
-            backgroundStyle: "white",
+            backgroundStyle: presentation.defaultStyle,
             elements: []
         };
         const updatedSlides = [...presentation.slides, newSlide];
@@ -363,15 +363,6 @@ function Presentation({ token }) {
         setCurrentSlideIndex(Math.max(currentSlideIndex - 1, 0));
         updatePresentationBackend(updatedPresentation);
     };
-
-    // const handleBackgroundChange = (style) => {
-    //     const updatedSlides = presentation.slides.map((slide, index) =>
-    //         index === currentSlideIndex ? { ...slide, backgroundStyle: style } : slide
-    //     );
-    //     const updatedPresentation = { ...presentation, slides: updatedSlides };
-    //     setPresentation(updatedPresentation);
-    //     updatePresentationBackend(updatedPresentation); // Save changes to backend
-    // };
 
     const handleSaveTitle = async () => {
         setTitle(newTitle);   
