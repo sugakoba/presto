@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, IconButton, Modal, TextField, Button } from '@mui/material';
+import { Box, Typography, IconButton, Modal, TextField, Button, Radio, RadioGroup, FormControlLabel } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import ColorizeIcon from '@mui/icons-material/Colorize';
 import BackgroundPicker from './BackgroundPicker';
@@ -107,7 +107,12 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
     const currentSlide = slides[currentSlideIndex];
     const [backgroundStyle, setBackgroundStyle] = useState(currentSlide?.backgroundStyle || 'white');
     const [isTextEditModalOpen, setTextEditModalOpen] = useState(false);
+    const [isImageEditModalOpen, setImageEditModalOpen] = useState(false);
+    const [isVideoEditModalOpen, setVideoEditModalOpen] = useState(false);
+    const [isCodeEditModalOpen, setCodeEditModalOpen] = useState(false);
     const [selectedElement, setSelectedElement] = useState({});
+
+    const [imageInputType, setImageInputType] = useState('url');
 
     const handleOpenPicker = () => {
         setIsPickerOpen(true);
@@ -121,12 +126,45 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
         setTextEditModalOpen(false);
     }
 
+    const handleCloseImageEdit = () => {
+        setImageEditModalOpen(false);
+    }
+
+    const handleCloseVideoModal = () => {
+        setVideoEditModalOpen(false);
+    }
+
+    const handleCloseCodeModal = () => {
+        setCodeEditModalOpen(false);
+    }
+
     const handleElementEdit = (element) => {
         // TODO need if statement:
-        setTextEditModalOpen(true);
+        if (element.type === 'text') {
+            setTextEditModalOpen(true);
+        } else if (element.type === 'image') {
+            setImageEditModalOpen(true);
+
+        } else if (element.type === 'video') {
+            setVideoEditModalOpen(true);
+
+        } else if (element.type === 'code') {
+            setCodeEditModalOpen(true);
+        }
+        
         setSelectedElement(element);
-        console.log(element)
     }
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                handleElementChange('url', reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const handleElementChange = (field, value) => {
         setSelectedElement((prev) => ({...prev, [field]: value}))
@@ -149,6 +187,9 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
     
         setPresentation(updatedPresentation);
         setTextEditModalOpen(false);
+        setImageEditModalOpen(false);
+        setVideoEditModalOpen(false);
+        setCodeEditModalOpen(false);
     }
 
     
@@ -201,28 +242,51 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                     background: currentSlide.backgroundStyle.includes('url(') ? `center / cover no-repeat ${currentSlide.backgroundStyle}` : currentSlide.backgroundStyle
                 }}
             >
+                {/* Edit below is required */}
+                {currentSlide.elements.map((element) => {
+                    const commonStyles = {
+                        top: `${element.ypos}%`,
+                        left: `${element.xpos}%`,
+                        height: `${element.height}%`,
+                        width: `${element.width}%`,
+                        zIndex: element.id,
+                    };
 
-                {currentSlide.elements.map((element) => (
-                    <TextElement
-                        key={element.id}
-                        onDoubleClick={() => handleElementEdit(element)}
-                        onContextMenu={(e) => {
-                            e.preventDefault();
-                            handleElementDelete(element);
-                        }}
-                        style={{
-                            top: `${element.ypos}%`,
-                            left: `${element.xpos}%`,
-                            height: `${element.height}%`,
-                            width: `${element.width}%`,
-                            fontSize: `${element.size}em`,
-                            color: element.color,
-                            zIndex: element.id,
-                        }}
-                    >
-                        {element.text}
-                    </TextElement>
-                ))}
+                    return element.type === "text" ? (
+                        <TextElement
+                            key={element.id}
+                            onDoubleClick={() => handleElementEdit(element)}
+                            onContextMenu={(e) => {
+                                e.preventDefault();
+                                handleElementDelete(element);
+                            }}
+                            style={{
+                                ...commonStyles,
+                                fontSize: `${element.size}em`,
+                                color: element.color,
+                            }}
+                        >
+                            {element.text}
+                        </TextElement>
+                    ) : element.type === "image" ? (
+                        <TextElement
+                            key={element.id}
+                            onDoubleClick={() => handleElementEdit(element)}
+                            onContextMenu={(e) => {
+                                e.preventDefault();
+                                handleElementDelete(element);
+                            }}
+                            style={commonStyles}
+                        >
+                            <img
+                                src={element.url}
+                                alt={element.description}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            />
+
+                        </TextElement>
+                    ) : null;
+                })}
 
                 <IconButton 
                     onClick={handleOpenPicker}
@@ -309,6 +373,91 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                             Save
                         </SaveButton>
                         <CancelButton variant="outlined" onClick={handleCloseTextEdit} startIcon={<CloseIcon />}>
+                            Cancel
+                        </CancelButton>
+                    </div>
+                        
+                </AddElementContainer>
+            </Modal>
+
+
+            <Modal open={isImageEditModalOpen} onClose={handleCloseImageEdit}>
+                <AddElementContainer>
+                    <AddElementTitle variant="h5" component="h2">
+                        Edit this Image
+                    </AddElementTitle>
+                    <AddElementInput 
+                        required
+                        value={selectedElement?.height || ''}
+                        onChange={(e) => handleElementChange('height', e.target.value)}
+                        label="Edit Image Height"
+                        variant="outlined"
+                        margin="normal"
+                    />
+                    <AddElementInput 
+                        required
+                        value={selectedElement?.width || ''}
+                        onChange={(e) => handleElementChange('width', e.target.value)}
+                        label="Edit Image Width"
+                        variant="outlined"
+                        margin="normal"
+                    />
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <RadioGroup
+                            row
+                            value={imageInputType}
+                            onChange={(e) => setImageInputType(e.target.value)}
+                        >
+                        <FormControlLabel value="url" control={<Radio />} label="Enter Image URL" />
+                        <FormControlLabel value="file" control={<Radio />} label="Upload Image File" />
+                        </RadioGroup>
+                        {imageInputType === 'url' ? (
+                            <AddElementInput
+                                onChange={(e) => handleElementChange('url', e.target.value)}
+                                label="Enter Image URL"
+                                variant="outlined"
+                                margin="normal"
+                                value={selectedElement?.url || ''}
+                            />
+                        ) : (
+                            <Button variant="outlined" component="label" sx={{ marginTop: 2 }} >
+                                Upload Image File
+                                <input type="file" accept="image/*" hidden onChange={handleFileChange}/>
+                            </Button>
+                        )}
+                    </div>
+
+
+                    <AddElementInput
+                        required
+                        onChange={(e) => handleElementChange('description', e.target.value)}
+                        label="Enter Alt Description"
+                        variant="outlined"
+                        margin="normal"
+                        value={selectedElement?.description || ''}
+                    />
+
+                    <AddElementInput 
+                        required
+                        value={String(selectedElement?.xpos) || ''}
+                        onChange={(e) => handleElementChange('xpos', e.target.value)}
+                        label="Edit X-coordinate"
+                        variant="outlined"
+                        margin="normal"
+                    />
+                    <AddElementInput 
+                        required
+                        value={String(selectedElement?.ypos) || ''}
+                        onChange={(e) => handleElementChange('ypos', e.target.value)}
+                        label="Edit Y-coordinate"
+                        variant="outlined"
+                        margin="normal"
+                    />
+                    <div>
+                        <SaveButton variant="contained" onClick={handleElementSave} startIcon={<CheckIcon />}>
+                            Save
+                        </SaveButton>
+                        <CancelButton variant="outlined" onClick={handleCloseImageEdit} startIcon={<CloseIcon />}>
                             Cancel
                         </CancelButton>
                     </div>
