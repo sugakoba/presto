@@ -31,9 +31,10 @@ export default App
 //port: 5005
 
 // TODO: 
-// Clicked for text, model appear.
-// Once clicked, send to Sever. Then edit the slide to make it appear. 
-// Presentation: Soft grey border, Double click would allow to edit as above. 
+// Need to have a functionality of check input. 
+// Need to edit the width.
+// Need to add double click. 
+// Need to send to backend for image, video and code
 // 
 // set up linting, test comes last. 
 

@@ -38,6 +38,17 @@ const SlideNumber = styled(Box)`
     border-radius: 5px;
 `;
 
+const TextElement = styled(Box)`
+    position: absolute;
+    text-align: left;
+    line-height: 1;
+    border: 1px solid #c0c0c0;
+    padding: 0px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+`;
+
 const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentationBackend, setPresentation }) => {
     const [isPickerOpen, setIsPickerOpen] = useState(false);
     const currentSlide = slides[currentSlideIndex];
@@ -72,6 +83,15 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
         handleClosePicker();
     };
 
+    const handleElementEdit = (element) => {
+
+    }
+
+
+    const handleElementDelete = (element) => {
+
+    }
+
     return (
         <>
             <SlideBox 
@@ -80,6 +100,24 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                     background: currentSlide.backgroundStyle.includes('url(') ? `center / cover no-repeat ${currentSlide.backgroundStyle}` : currentSlide.backgroundStyle
                 }}
             >
+
+                {currentSlide.elements.map((element) => (
+                    <TextElement
+                        key={element.id}
+                        // onDoubleClick={() => handleElementDoubleClick(element)}
+                        style={{
+                            top: element.ypos,
+                            left: element.xpos,
+                            height: `${element.height}%`,
+                            width: `${element.width}%`,
+                            fontSize: `${element.size}em`,
+                            color: element.color,
+                        }}
+                    >
+                        {element.text}
+                    </TextElement>
+                ))}
+
                 <IconButton 
                     onClick={handleOpenPicker}
                     sx={{ position: 'absolute', top: '10px', left: '10px', backgroundColor: 'white', 
