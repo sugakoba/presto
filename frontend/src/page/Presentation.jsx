@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { Box, Button, Typography, Modal, TextField, IconButton, List, Card, CardContent, Fab, Drawer, ListItemButton, ListItemIcon, ListItemText, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import { Box, Button, Typography, Modal, TextField, IconButton, List, Card, CardContent, Fab, Drawer, ListItemButton, ListItemIcon, ListItemText, Accordion, AccordionSummary, AccordionDetails, Checkbox, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 import axios from 'axios';
 import {
     EditOutlined as EditOutlinedIcon,
@@ -19,7 +19,8 @@ import {
     VideoCameraBack as VideoIcon,
     Code as CodeIcon,
     Slideshow as SlideshowIcon,
-    ExpandMore as ExpandMoreIcon
+    ExpandMore as ExpandMoreIcon,
+    ArrowBack
   } from '@mui/icons-material';
 import ErrorPopUp from "../component/ErrorPopUp";
 import Slide from "../component/Slide";
@@ -191,6 +192,10 @@ function Presentation({ token }) {
     const [title, setTitle] = useState(presentation.name);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isTextModalOpen, setIsTextModalOpen] = useState(false);
+    const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+    const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+    const [isCodeModalOpen, setIsCodeModalOpen] = useState(false);
+    const [imageInputType, setImageInputType] = useState('url');
     const [newTitle, setNewTitle] = useState(title);
     const [currentSlideIndex, setCurrentSlideIndex] = useState(Number(slideNumber) - 1 || null);
     const [errorMsg, setErrorMsg] = useState('');
@@ -204,8 +209,23 @@ function Presentation({ token }) {
     const [textAreaHeight, setTextAreaHeight] = useState(0);
     const [textAreaWidth, setTextAreaWidth] = useState(0);
     const [text, setText] = useState('');
-    const [textSize, setTextSize] = useState('0');
+    const [textSize, setTextSize] = useState(0);
     const [textColor, setTextColor] = useState('0');
+
+    const [imageWidth, setImageWidth] = useState(0);
+    const [imageHeight, setImageHeight] = useState(0);
+    const [imageAddress, setImageAddress] = useState("");
+    const [imageDescription, setImageDescription] = useState("");
+
+    const [videoWidth, setVideoWidth] = useState(0);
+    const [videoHeight, setVideoHeight] = useState(0);
+    const [videoURL, setVideoURL] = useState("");
+    const [videoAuto, setVideoAuto] = useState(false);
+
+    const [codeWidth, setCodeWidth] = useState(0);
+    const [codeHeight, setCodeHeight] = useState(0);
+    const [code, setCode] = useState("");
+    const [codeSize, setCodeSize] = useState(0);
 
     const handleToolExpand = () => {
         setToolExpand(!toolExpand);
@@ -236,12 +256,47 @@ function Presentation({ token }) {
         setIsTextModalOpen(false);
     }
 
+    const handleOpenImageModal = () => {
+        setIsImageModalOpen(true);
+    }
+
+    const handleCloseImageModal = () => {
+        setIsImageModalOpen(false);
+    }
+
+    const handleOpenVideoModal = () => {
+        setIsVideoModalOpen(true);
+    }
+
+    const handleCloseVideoModal = () => {
+        setIsVideoModalOpen(false);
+    }
+
+    const handleOpenCodeModal = () => {
+        setIsCodeModalOpen(true);
+    }
+
+    const handleCloseCodeModal = () => {
+        setIsCodeModalOpen(false);
+    }
+
     const handleCloseError = () => {
         setErrorOpen(false);
     }    
 
     const cancelDelete = () => {
         setShowDeleteConfirmation(false);
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImageAddress(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const updateSlideIndex = (index) => {
@@ -290,8 +345,6 @@ function Presentation({ token }) {
 
     
     const handleNewText = async () => {
-        
-
         const newText = {
             id: presentation.slides[currentSlideIndex].elements.length + 1,
             type: "text",
@@ -317,6 +370,24 @@ function Presentation({ token }) {
         updatePresentationBackend(updatedPresentation);
         handleCloseTextModal();
     };
+
+    const handleNewImage = async () => {
+
+        handleCloseImageModal();
+
+    }
+
+    const handleNewVideo = async() => {
+
+
+        handleCloseVideoModal();
+    }
+
+    const handleNewCode = async() => {
+
+
+        handleCloseCodeModal();
+    }
 
     const addNewSlide = async () => {
         const newSlide = {
@@ -671,7 +742,7 @@ function Presentation({ token }) {
                         <AddElementInput 
                             required
                             onChange={(e) => setTextSize(e.target.value)}
-                            label="Enter New Text Size"
+                            label="Enter New Text Size In em"
                             variant="outlined"
                             margin="normal"
                         />
@@ -694,7 +765,115 @@ function Presentation({ token }) {
                     </AddElementContainer>
                 </Modal>
 
-                
+
+                <Modal open={isImageModalOpen} onClose={handleCloseImageModal}>
+                    <AddElementContainer>
+                        <AddElementTitle variant="h5" component="h2">
+                            Add New Image
+                        </AddElementTitle>
+                        <AddElementInput
+                            required
+                            onChange={(e) => setImageHeight(e.target.value)}
+                            label="Enter Image Height"
+                            variant="outlined"
+                            margin="normal"
+                        />
+                        <AddElementInput
+                            required
+                            onChange={(e) => setImageWidth(e.target.value)}
+                            label="Enter Image Width"
+                            variant="outlined"
+                            margin="normal"
+                        />
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <RadioGroup
+                                row
+                                value={imageInputType}
+                                onChange={(e) => setImageInputType(e.target.value)}
+                            >
+                            <FormControlLabel value="url" control={<Radio />} label="Enter Image URL" />
+                            <FormControlLabel value="file" control={<Radio />} label="Upload Image File" />
+                            </RadioGroup>
+                            {imageInputType === 'url' ? (
+                                <AddElementInput
+                                    onChange={(e) => setImageAddress(e.target.value)}
+                                    label="Enter Image URL"
+                                    variant="outlined"
+                                    margin="normal"
+                                />
+                            ) : (
+                                <Button variant="outlined" component="label" sx={{ marginTop: 2 }} >
+                                    Upload Image File
+                                    <input type="file" accept="image/*" hidden onChange={handleFileChange} />
+                                </Button>
+                            )}
+                        </div>
+
+
+                        <AddElementInput
+                            required
+                            onChange={(e) => setImageDescription(e.target.value)}
+                            label="Enter Alt Description"
+                            variant="outlined"
+                            margin="normal"
+                        />
+                        <div>
+                            <SaveButton variant="contained" onClick={handleNewImage} startIcon={<CheckIcon />}>
+                                Save
+                            </SaveButton>
+                            <CancelButton variant="outlined" onClick={handleCloseImageModal} startIcon={<CloseIcon />}>
+                                Cancel
+                            </CancelButton>
+                        </div>
+                        
+                    </AddElementContainer>
+                </Modal>
+
+                <Modal open={isVideoModalOpen} onClose={handleCloseVideoModal}>
+                    <AddElementContainer>
+                        <AddElementTitle variant="h5" component="h2">
+                            Add New Video
+                        </AddElementTitle>
+                        <AddElementInput
+                            required
+                            onChange={(e) => setVideoHeight(e.target.value)}
+                            label="Enter Video Height"
+                            variant="outlined"
+                            margin="normal"
+                        />
+                        <AddElementInput
+                            required
+                            onChange={(e) => setVideoWidth(e.target.value)}
+                            label="Enter Video Width"
+                            variant="outlined"
+                            margin="normal"
+                        />
+                        <AddElementInput
+                            required
+                            onChange={(e) => setVideoURL(e.target.value)}
+                            label="Enter Video URL (optional)"
+                            variant="outlined"
+                            margin="normal"
+                        />
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            Autoplay?
+                            <Checkbox
+                                checked={videoAuto}
+                                onChange={(e) => setVideoAuto(e.target.checked)}
+                                color="primary"
+                            />
+                        </div>
+                        <div>
+                            <SaveButton variant="contained" onClick={handleNewVideo} startIcon={<CheckIcon />}>
+                                Save
+                            </SaveButton>
+                            <CancelButton variant="outlined" onClick={handleCloseVideoModal} startIcon={<CloseIcon />}>
+                                Cancel
+                            </CancelButton>
+                        </div>
+                        
+                    </AddElementContainer>
+                </Modal>
 
 
 
@@ -722,15 +901,15 @@ function Presentation({ token }) {
                                 </IconButton>
 {/* Section 3: Edit here */}
                                     <Box display="flex" alignItems="center">
-                                        <Button
+                                        <SaveButton
                                             onClick={handleToolExpand}
                                             variant="contained"
-                                            startIcon={toolExpand ? <ArrowBackIcon /> : <ArrowForwardIcon />}
+                                            startIcon={toolExpand ? <ArrowForwardIcon /> : <ArrowBackIcon />}
                                             sx={{ marginRight: 1 }}
                                             size="small"
                                         >
                                             {toolExpand ? 'Hide' : 'Tool'}
-                                        </Button>
+                                        </SaveButton>
 
                                         {toolExpand && (
                                             <Box display ="flex" gap={0}> 
@@ -738,15 +917,15 @@ function Presentation({ token }) {
                                                     <TextIcon />
                                                 </IconButton>
 
-                                                <IconButton aria-label="imageInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                                <IconButton aria-label="imageInput" onClick={handleOpenImageModal} sx={{ marginRight: 'auto' }}>
                                                     <ImageIcon />
                                                 </IconButton>
 
-                                                <IconButton aria-label="videoInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                                <IconButton aria-label="videoInput" onClick={handleOpenVideoModal} sx={{ marginRight: 'auto' }}>
                                                     <VideoIcon />
                                                 </IconButton>
 
-                                                <IconButton aria-label="codeInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                                                <IconButton aria-label="codeInput" onClick={handleOpenCodeModal} sx={{ marginRight: 'auto' }}>
                                                     <CodeIcon />
                                                 </IconButton>
                                             </Box>
