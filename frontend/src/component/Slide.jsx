@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, IconButton, Modal, TextField, Button, Radio, RadioGroup, FormControlLabel } from '@mui/material';
+import { Box, Typography, IconButton, Modal, TextField, Button, Radio, RadioGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import ColorizeIcon from '@mui/icons-material/Colorize';
 import BackgroundPicker from './BackgroundPicker';
@@ -7,6 +7,7 @@ import {
     Check as CheckIcon,
     Close as CloseIcon,
 } from '@mui/icons-material';
+import YouTube from 'react-youtube';
 const SlideBox = styled(Box)`
     position: relative;
     width: 75%;
@@ -285,6 +286,23 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                             />
 
                         </TextElement>
+                    ) : element.type === "video" ? (
+                        <TextElement
+                            key={element.id}
+                            onDoubleClick={() => handleElementEdit(element)}
+                            onContextMenu={(e) => {
+                                e.preventDefault();
+                                handleElementDelete(element);
+                            }}
+                            style={commonStyles}
+                        >
+                            <iframe
+                                width="100%"
+                                height="100%"
+                                src={`${element.url}?autoplay=${element.auto ? 1 : 0}`}
+                                allow='autoplay'
+                            />
+                        </TextElement>
                     ) : null;
                 })}
 
@@ -464,6 +482,71 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                         
                 </AddElementContainer>
             </Modal>
+
+            <Modal open={isVideoEditModalOpen} onClose={handleCloseVideoModal}>
+                    <AddElementContainer>
+                        <AddElementTitle variant="h5" component="h2">
+                            Edit New Video
+                        </AddElementTitle>
+                        <AddElementInput
+                            required
+                            value={selectedElement?.height || ''}
+                            onChange={(e) => handleElementChange('height', e.target.value)}
+                            label="Edit Video Height"
+                            variant="outlined"
+                            margin="normal"
+                        />
+                        <AddElementInput
+                            required
+                            value={selectedElement?.width || ''}
+                            onChange={(e) => handleElementChange('width', e.target.value)}
+                            label="Edit Video Width"
+                            variant="outlined"
+                            margin="normal"
+                        />
+                        <AddElementInput
+                            required
+                            value={selectedElement?.url || ''}
+                            onChange={(e) => handleElementChange('url', e.target.value)}
+                            label="Enter Video URL (optional)"
+                            variant="outlined"
+                            margin="normal"
+                        />
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            Autoplay?
+                            <Checkbox
+                                checked={selectedElement.autoplay}
+                                onChange={(e) => handleElementChange('autoplay', e.target.value)}
+                                color="primary"
+                            />
+                        </div>
+                        <AddElementInput 
+                            required
+                            value={String(selectedElement?.xpos) || ''}
+                            onChange={(e) => handleElementChange('xpos', e.target.value)}
+                            label="Edit X-coordinate"
+                            variant="outlined"
+                            margin="normal"
+                        />
+                        <AddElementInput 
+                            required
+                            value={String(selectedElement?.ypos) || ''}
+                            onChange={(e) => handleElementChange('ypos', e.target.value)}
+                            label="Edit Y-coordinate"
+                            variant="outlined"
+                            margin="normal"
+                        />
+                        <div>
+                            <SaveButton variant="contained" onClick={handleElementSave} startIcon={<CheckIcon />}>
+                                Save
+                            </SaveButton>
+                            <CancelButton variant="outlined" onClick={handleCloseVideoModal} startIcon={<CloseIcon />}>
+                                Cancel
+                            </CancelButton>
+                        </div>
+                        
+                    </AddElementContainer>
+                </Modal>
             </>
     );
 };
