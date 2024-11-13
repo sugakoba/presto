@@ -346,7 +346,7 @@ function Presentation({ token }) {
     
     const handleNewText = async () => {
         const newText = {
-            id: presentation.slides[currentSlideIndex].elements.length + 1,
+            id: presentation.slides[currentSlideIndex].elements[presentation.slides[currentSlideIndex].elements.length - 1].id + 1,
             type: "text",
             height: textAreaHeight,
             width: textAreaWidth,
