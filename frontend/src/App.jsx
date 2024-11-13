@@ -31,10 +31,9 @@ export default App
 //port: 5005
 
 // TODO: 
+// Overflow when type in more code. 
 // Need to have a functionality of check input. 
-// Need to edit the width.
-// Need to add double click. 
-// Need to send to backend for image, video and code
+// Need to have usuability of poping up confirm delete element. 
 // 
 // set up linting, test comes last. 
 

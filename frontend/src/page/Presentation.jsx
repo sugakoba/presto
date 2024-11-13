@@ -345,8 +345,16 @@ function Presentation({ token }) {
 
     
     const handleNewText = async () => {
+        let elementLength = presentation.slides[currentSlideIndex].elements.length;
+
+        if (elementLength === 0) {
+            elementLength = 1;
+        } else {
+            elementLength = presentation.slides[currentSlideIndex].elements[elementLength - 1].id + 1
+        }
+
         const newText = {
-            id: presentation.slides[currentSlideIndex].elements[presentation.slides[currentSlideIndex].elements.length - 1].id + 1,
+            id: elementLength,
             type: "text",
             height: textAreaHeight,
             width: textAreaWidth,
@@ -372,20 +380,105 @@ function Presentation({ token }) {
     };
 
     const handleNewImage = async () => {
+        let elementLength = presentation.slides[currentSlideIndex].elements.length;
 
+        if (elementLength === 0) {
+            elementLength = 1;
+        } else {
+            elementLength = presentation.slides[currentSlideIndex].elements[elementLength - 1].id + 1
+        }
+
+        const newImage = {
+            id: elementLength,
+            type: "image",
+            height: imageHeight,
+            width: imageWidth,
+            url: imageAddress,
+            description: imageDescription,
+            xpos: 0,
+            ypos: 0
+        }
+
+        const updatedElements = [...presentation.slides[currentSlideIndex].elements, newImage];
+        const updatedSlides = presentation.slides.map((slide, index) =>
+            index === currentSlideIndex
+                ? { ...slide, elements: updatedElements }
+                : slide
+        );
+
+        const updatedPresentation = { ...presentation, slides: updatedSlides };
+
+        setPresentation(updatedPresentation);
+        updatePresentationBackend(updatedPresentation);
         handleCloseImageModal();
 
     }
 
     const handleNewVideo = async() => {
+        let elementLength = presentation.slides[currentSlideIndex].elements.length;
 
+        if (elementLength === 0) {
+            elementLength = 1;
+        } else {
+            elementLength = presentation.slides[currentSlideIndex].elements[elementLength - 1].id + 1
+        }
 
+        const newVideo = {
+            id: elementLength,
+            type: "video",
+            height: videoHeight,
+            width: videoWidth,
+            url: videoURL,
+            autoplay: videoAuto,
+            xpos: 0,
+            ypos: 0
+        }
+
+        const updatedElements = [...presentation.slides[currentSlideIndex].elements, newVideo];
+        const updatedSlides = presentation.slides.map((slide, index) =>
+            index === currentSlideIndex
+                ? { ...slide, elements: updatedElements }
+                : slide
+        );
+
+        const updatedPresentation = { ...presentation, slides: updatedSlides };
+
+        setPresentation(updatedPresentation);
+        updatePresentationBackend(updatedPresentation);
         handleCloseVideoModal();
     }
 
     const handleNewCode = async() => {
+        let elementLength = presentation.slides[currentSlideIndex].elements.length;
 
+        if (elementLength === 0) {
+            elementLength = 1;
+        } else {
+            elementLength = presentation.slides[currentSlideIndex].elements[elementLength - 1].id + 1
+        }
 
+        const newCode = {
+            id: elementLength,
+            type: "code",
+            height: codeHeight,
+            width: codeWidth,
+            size: codeSize,
+            code: code,
+            xpos: 0,
+            ypos: 0
+        }
+
+        const updatedElements = [...presentation.slides[currentSlideIndex].elements, newCode];
+        const updatedSlides = presentation.slides.map((slide, index) =>
+            index === currentSlideIndex
+                ? { ...slide, elements: updatedElements }
+                : slide
+        );
+
+        const updatedPresentation = { ...presentation, slides: updatedSlides };
+
+        setPresentation(updatedPresentation);
+        updatePresentationBackend(updatedPresentation);
         handleCloseCodeModal();
     }
 
@@ -915,6 +1008,15 @@ function Presentation({ token }) {
                             fullWidth
 
                         />
+
+                        <div>
+                            <SaveButton variant="contained" onClick={handleNewCode} startIcon={<CheckIcon />}>
+                                Save
+                            </SaveButton>
+                            <CancelButton variant="outlined" onClick={handleCloseCodeModal} startIcon={<CloseIcon />}>
+                                Cancel
+                            </CancelButton>
+                        </div>
                         
                     </AddElementContainer>
                 </Modal>
