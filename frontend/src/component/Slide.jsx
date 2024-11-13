@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Box, Typography, IconButton } from '@mui/material';
+import { Box, Typography, IconButton, Modal, TextField, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import ColorizeIcon from '@mui/icons-material/Colorize';
 import BackgroundPicker from './BackgroundPicker';
-
+import {
+    Check as CheckIcon,
+    Close as CloseIcon,
+} from '@mui/icons-material';
 const SlideBox = styled(Box)`
     position: relative;
     width: 75%;
@@ -49,10 +52,62 @@ const TextElement = styled(Box)`
     margin: 0;
 `;
 
+export const AddElementContainer = styled(Box)`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50vw;
+    height: 70vh;
+    background-color: #fff;
+    box-shadow: 24;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    overflow-y: auto;
+    padding-top: 100px;
+`;
+
+const AddElementTitle = styled(Typography)`
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    padding-bottom: 20px;
+`;
+
+const AddElementInput = styled(TextField)({
+    width: '200px',
+    '& .MuiOutlinedInput-root': {
+        '&.Mui-focused fieldset': {
+            borderColor: '#C46243', 
+        },
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+        color: '#C46243', 
+    },
+});
+
+const SaveButton = styled(Button)`
+    background-color: #C46243;
+    box-shadow: none;
+    text-transform: none;
+`;
+
+const CancelButton = styled(Button)`
+    border-color: #C46243;
+    color: #C46243;
+    box-shadow: none;
+    text-transform: none;
+    margin-left: 10px;
+`;
+
+
 const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentationBackend, setPresentation }) => {
     const [isPickerOpen, setIsPickerOpen] = useState(false);
     const currentSlide = slides[currentSlideIndex];
     const [backgroundStyle, setBackgroundStyle] = useState(currentSlide?.backgroundStyle || 'white');
+    const [isTextEditModalOpen, setTextEditModalOpen] = useState(false);
+    const [selectedElement, setSelectedElement] = useState({});
 
     const handleOpenPicker = () => {
         setIsPickerOpen(true);
@@ -61,6 +116,30 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
     const handleClosePicker = () => {
         setIsPickerOpen(false);
     };
+
+    const handleCloseTextEdit = () => {
+        setTextEditModalOpen(false);
+    }
+
+    const handleElementEdit = (element) => {
+        setTextEditModalOpen(true);
+        setSelectedElement(element);
+        console.log(element)
+    }
+
+    const handleElementChange = (field, value) => {
+        setSelectedElement((prev) => ({...prev, [field]: value}))
+    }
+
+    const handleElementSave = () => {
+        //TODO
+        setTextEditModalOpen(false);
+    }
+
+    
+    const handleElementDelete = (element) => {
+
+    }
 
     const handleBackgroundChange = (style, isDefault) => {
         setBackgroundStyle(style);
@@ -83,14 +162,6 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
         handleClosePicker();
     };
 
-    const handleElementEdit = (element) => {
-
-    }
-
-
-    const handleElementDelete = (element) => {
-
-    }
 
     return (
         <>
@@ -104,7 +175,7 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                 {currentSlide.elements.map((element) => (
                     <TextElement
                         key={element.id}
-                        // onDoubleClick={() => handleElementDoubleClick(element)}
+                        onDoubleClick={() => handleElementEdit(element)}
                         style={{
                             top: element.ypos,
                             left: element.xpos,
@@ -112,6 +183,7 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                             width: `${element.width}%`,
                             fontSize: `${element.size}em`,
                             color: element.color,
+                            zIndex: element.id,
                         }}
                     >
                         {element.text}
@@ -120,7 +192,7 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
 
                 <IconButton 
                     onClick={handleOpenPicker}
-                    sx={{ position: 'absolute', top: '10px', left: '10px', backgroundColor: 'white', 
+                    sx={{ position: 'absolute', top: '10px', right: '10px', backgroundColor: 'white', 
                         '&:hover': {
                             backgroundColor: '#fbf1d7',
                         }
@@ -136,7 +208,80 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                 onClose={handleClosePicker}
                 onBackgroundChange={handleBackgroundChange}
             />
-        </>
+
+            <Modal open={isTextEditModalOpen} onClose={handleCloseTextEdit}>
+                <AddElementContainer>
+                    <AddElementTitle variant="h5" component="h2">
+                        Edit this Text
+                    </AddElementTitle>
+                    <AddElementInput 
+                        required
+                        value={selectedElement?.height || ''}
+                        onChange={(e) => handleElementChange('height', e.target.value)}
+                        label="Edit Text Area Height"
+                        variant="outlined"
+                        margin="normal"
+                    />
+                    <AddElementInput 
+                        required
+                        value={selectedElement?.width || ''}
+                        onChange={(e) => handleElementChange('width', e.target.value)}
+                        label="Edit Text Area Width"
+                        variant="outlined"
+                        margin="normal"
+                    />
+                    <AddElementInput 
+                        required
+                        value={selectedElement?.text || ''}
+                        onChange={(e) => handleElementChange('text', e.target.value)}
+                        label="Edit New Text Content"
+                        variant="outlined"
+                        margin="normal"
+                    />
+                    <AddElementInput 
+                        required
+                        value={selectedElement?.size || ''}
+                        onChange={(e) => handleElementChange('size', e.target.value)}
+                        label="Edit New Text Size In em"
+                        variant="outlined"
+                        margin="normal"
+                    />
+                    <AddElementInput 
+                        required
+                        value={selectedElement?.color || ''}
+                        onChange={(e) => handleElementChange('color', e.target.value)}
+                        label="Edit New Text Color"
+                        variant="outlined"
+                        margin="normal"
+                    />
+                    <AddElementInput 
+                        required
+                        value={String(selectedElement?.xpos) || ''}
+                        onChange={(e) => handleElementChange('xpos', e.target.value)}
+                        label="Edit X-coordinate"
+                        variant="outlined"
+                        margin="normal"
+                    />
+                    <AddElementInput 
+                        required
+                        value={String(selectedElement?.ypos) || ''}
+                        onChange={(e) => handleElementChange('ypos', e.target.value)}
+                        label="Edit Y-coordinate"
+                        variant="outlined"
+                        margin="normal"
+                    />
+                    <div>
+                        <SaveButton variant="contained" onClick={handleElementSave} startIcon={<CheckIcon />}>
+                            Save
+                        </SaveButton>
+                        <CancelButton variant="outlined" onClick={handleCloseTextEdit} startIcon={<CloseIcon />}>
+                            Cancel
+                        </CancelButton>
+                    </div>
+                        
+                </AddElementContainer>
+            </Modal>
+            </>
     );
 };
 
