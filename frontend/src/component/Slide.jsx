@@ -122,6 +122,7 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
     }
 
     const handleElementEdit = (element) => {
+        // TODO need if statement:
         setTextEditModalOpen(true);
         setSelectedElement(element);
         console.log(element)
@@ -132,13 +133,42 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
     }
 
     const handleElementSave = () => {
-        //TODO
+        const updatedSlides = slides.map((slide, index) => {
+            if (index === currentSlideIndex) {
+                const updatedElements = slide.elements.map((element) => 
+                    element.id === selectedElement.id ? selectedElement : element
+                );
+                return { ...slide, elements: updatedElements };
+            }
+            return slide;
+        });
+    
+        const updatedPresentation = { ...presentation, slides: updatedSlides };
+    
+        updatePresentationBackend(updatedPresentation);
+    
+        setPresentation(updatedPresentation);
         setTextEditModalOpen(false);
     }
 
     
-    const handleElementDelete = (element) => {
-
+    const handleElementDelete = (elementToDelete) => {
+        const updatedElements = currentSlide.elements.filter(
+            (element) => element.id !== elementToDelete.id
+        );
+        
+        const updatedSlide = { ...currentSlide, elements: updatedElements };
+        
+        const updatedSlides = slides.map((slide, index) => {
+            if (index === currentSlideIndex) {
+                return updatedSlide;
+            }
+            return slide;
+        });
+    
+        const updatedPresentation = { ...presentation, slides: updatedSlides };
+        updatePresentationBackend(updatedPresentation);
+        setPresentation(updatedPresentation);
     }
 
     const handleBackgroundChange = (style, isDefault) => {
@@ -176,9 +206,13 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                     <TextElement
                         key={element.id}
                         onDoubleClick={() => handleElementEdit(element)}
+                        onContextMenu={(e) => {
+                            e.preventDefault();
+                            handleElementDelete(element);
+                        }}
                         style={{
-                            top: element.ypos,
-                            left: element.xpos,
+                            top: `${element.ypos}%`,
+                            left: `${element.xpos}%`,
                             height: `${element.height}%`,
                             width: `${element.width}%`,
                             fontSize: `${element.size}em`,
