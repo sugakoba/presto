@@ -20,11 +20,13 @@ import {
     Code as CodeIcon,
     Slideshow as SlideshowIcon,
     ExpandMore as ExpandMoreIcon,
-    CompareArrows as CompareArrowsIcon
+    CompareArrows as CompareArrowsIcon,
+    History as HistoryIcon
   } from '@mui/icons-material';
 import ErrorPopUp from "../component/ErrorPopUp";
 import Slide from "../component/Slide";
 import Rearrange from '../component/Rearrange';
+import RevisionHistory from '../component/RevisionHistory';
 
 const PresentationContainer = styled(Box)`
     background-color: #fbf1d7;
@@ -40,7 +42,7 @@ const TitleContainer = styled(Box)`
     align-items: center;
     margin-bottom: 10px;
     transform: translateX(-50%); 
-    @media (max-width: 800px) {
+    @media (max-width: 1000px) {
         position: static; 
         transform: none;
     }
@@ -183,17 +185,20 @@ const AddElementInput = styled(TextField)({
 function Presentation({ token }) {
     const [presentation, setPresentation] = useState({});
     const [presentations, setPresentations] = useState([]);
+    const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
     const { presentationId, slideNumber } = useParams();
+
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [title, setTitle] = useState(presentation.name);
+    const [newTitle, setNewTitle] = useState(title);
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isTextModalOpen, setIsTextModalOpen] = useState(false);
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
     const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
     const [isCodeModalOpen, setIsCodeModalOpen] = useState(false);
     const [imageInputType, setImageInputType] = useState('url');
-    const [newTitle, setNewTitle] = useState(title);
-    const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+    
     const [errorMsg, setErrorMsg] = useState('');
     const [isErrorOpen, setErrorOpen] = useState(false);
     const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -202,6 +207,10 @@ function Presentation({ token }) {
     const [toolExpand, setToolExpand] = useState(true);
     const inputRef = useRef(null);
     const navigate = useNavigate();
+
+    const [revisionHistory, setRevisionHistory] = useState([]);
+    const [lastSaveTime, setLastSaveTime] = useState(null);
+    const [isRevisionHistoryOpen, setIsRevisionHistoryOpen] = useState(false);
 
     const [textAreaHeight, setTextAreaHeight] = useState(0);
     const [textAreaWidth, setTextAreaWidth] = useState(0);
@@ -311,6 +320,7 @@ function Presentation({ token }) {
     };
 
     const updatePresentationBackend = async (updatedPresentation) => {
+        saveVersion();
         try {
             const updatePresentations = presentations.map((presentation) =>
                 Number(presentation.id) === Number(presentationId)
@@ -647,6 +657,30 @@ function Presentation({ token }) {
         }
     };
 
+    const toggleRevisionHistory = () => {
+        setIsRevisionHistoryOpen(!isRevisionHistoryOpen);
+    };
+
+    const saveVersion = () => {
+        const now = new Date();
+        if (!lastSaveTime || (now - lastSaveTime >= 60000)) { 
+            const newVersion = {
+                timestamp: now,
+                slides: [...presentation.slides]
+            };
+            setRevisionHistory(prevHistory => [...prevHistory, newVersion]);
+            setLastSaveTime(now);
+        }
+    };    
+
+    const handleRestore = (slides) => {
+        setPresentation(prevPresentation => ({
+            ...prevPresentation,
+            slides: slides
+        }));
+        setIsRevisionHistoryOpen(false); 
+    };
+
     const openPreview = () => {
         const slidePreviewNum = (slideNumber || 1);
         window.open(`/dashboard/${presentationId}/preview/${slidePreviewNum}`, "_blank");
@@ -682,7 +716,7 @@ function Presentation({ token }) {
                         top: '10px',
                         right: '10px',
                         display: 'none', 
-                        '@media (max-width: 800px)': {
+                        '@media (max-width: 1000px)': {
                             display: 'block', 
                         },
                     }} 
@@ -709,6 +743,18 @@ function Presentation({ token }) {
                             </ListItemIcon>
                             <ListItemText primary="Preview" />
                         </ListItemButton>
+                        <ListItemButton variant="outlined" onClick={toggleRearrangeScreen} fullWidth>
+                            <ListItemIcon>
+                                <CompareArrowsIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Rearrange Slides" />
+                        </ListItemButton>
+                        <ListItemButton variant="outlined" onClick={toggleRevisionHistory} fullWidth>
+                            <ListItemIcon>
+                                <HistoryIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Version History" />
+                        </ListItemButton>
                         <ListItemButton variant="outlined" component="label" fullWidth>
                             <ListItemIcon>
                                 <ImageIcon />
@@ -727,7 +773,7 @@ function Presentation({ token }) {
                     <Box 
                         sx={{
                             display: 'flex', 
-                            '@media (max-width: 800px)': {
+                            '@media (max-width: 1000px)': {
                                 display: 'none',
                             },
                             ml: 12,
@@ -744,7 +790,7 @@ function Presentation({ token }) {
                     <Box 
                         sx={{
                             display: 'flex', 
-                            '@media (max-width: 800px)': {
+                            '@media (max-width: 1000px)': {
                                 display: 'none',
                             },
                             mt: 0,
@@ -762,6 +808,9 @@ function Presentation({ token }) {
                         </CancelButton>
                         <SaveButton aria-label="rearrange-slides" variant="contained" onClick={toggleRearrangeScreen} startIcon={<CompareArrowsIcon />}>
                             Rearrange Slides
+                        </SaveButton>
+                        <SaveButton aria-label="rearrange-slides" variant="contained" onClick={toggleRevisionHistory} startIcon={<HistoryIcon />}>
+                            Version History
                         </SaveButton>
                         <SaveButton aria-label="presentation-preview" variant="contained" onClick={openPreview} startIcon={<SlideshowIcon />}>
                             Preview
@@ -1129,6 +1178,12 @@ function Presentation({ token }) {
                     onClose={toggleRearrangeScreen} 
                     slides={presentation.slides} 
                     onRearrange={handleRearrange}
+                />
+                <RevisionHistory 
+                    open={isRevisionHistoryOpen} 
+                    onClose={toggleRevisionHistory} 
+                    history={revisionHistory}
+                    onRestore={handleRestore}
                 />
 
                 <ErrorPopUp isOpen={isErrorOpen} onClose={handleCloseError} message = {errorMsg}>
