@@ -24,7 +24,7 @@ const Rearrange = ({ open, onClose, slides, onRearrange }) => {
     return (
         <Modal open={open} onClose={onClose}>
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                <Box sx={{ backgroundColor: 'white', padding: 2, borderRadius: 2, width: '50vw', maxHeight: '80vh', overflow: 'auto' }}>
+                <Box sx={{ backgroundColor: 'white', padding: 2, borderRadius: 2, width: '80vw', maxHeight: '80vh', overflow: 'auto' }}>
                     <IconButton onClick={onClose} variant="contained">
                         <CloseIcon />
                     </IconButton>
