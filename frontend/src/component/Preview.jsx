@@ -15,6 +15,8 @@ const FullScreenContainer = styled(Box)`
     height: 100vh;
     background-color: #333;
     overflow: hidden;
+    opacity: ${(props) => (props.fade ? 0 : 1)};
+    transition: opacity 0.5s ease-in-out;
 `;
 
 const SlideNumber = styled(Box)`
@@ -34,16 +36,17 @@ const SlideNumber = styled(Box)`
 `;
 
 const Preview = ({ token }) => {
+    const [fade, setFade] = useState(false); 
     const [slides, setSlides] = useState([]);
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
     const { presentationId, slideNumber } = useParams();
     const currentSlide = slides[currentSlideIndex];
     const navigate = useNavigate();
 
-    const updateSlideIndex = (index) => {
-        setCurrentSlideIndex(index);
-        navigate(`/dashboard/${presentationId}/preview/${index + 1}`, { replace: true });
-    };
+    // const updateSlideIndex = (index) => {
+    //     setCurrentSlideIndex(index);
+    //     navigate(`/dashboard/${presentationId}/preview/${index + 1}`, { replace: true });
+    // };
 
     const fetchSlides = async () => {
         try {
@@ -66,15 +69,24 @@ const Preview = ({ token }) => {
         }
     };
 
+    const handleSlideChange = (newIndex) => {
+        setFade(true); 
+        setTimeout(() => {
+            setCurrentSlideIndex(newIndex); 
+            setFade(false); 
+            navigate(`/dashboard/${presentationId}/preview/${index + 1}`, { replace: true });
+        }, 500); 
+    };
+
     const handleNextSlide = () => {
         const newIndex = currentSlideIndex < slides.length - 1 ? currentSlideIndex + 1 : 0;
-        updateSlideIndex(newIndex);
+        handleSlideChange(newIndex);
         
     };
     
     const handlePrevSlide = () => {
         const newIndex = currentSlideIndex > 0 ? currentSlideIndex - 1 : slides.length - 1;
-        updateSlideIndex(newIndex);
+        handleSlideChange(newIndex);
     };    
 
     useEffect(() => {
@@ -90,9 +102,12 @@ const Preview = ({ token }) => {
     return (
         <>
             {currentSlide && (
-                <FullScreenContainer sx={{
-                    background: currentSlide.backgroundStyle.includes('url(') ? `center / cover no-repeat ${currentSlide.backgroundStyle}` : currentSlide.backgroundStyle
-                }}>
+                <FullScreenContainer 
+                    fade={fade}
+                    sx={{
+                        background: currentSlide.backgroundStyle.includes('url(') ? `center / cover no-repeat ${currentSlide.backgroundStyle}` : currentSlide.backgroundStyle
+                    }}
+                >
                     {/* to modify after 2.3 has been setup */}
                     <Typography variant="h4" color="white">{currentSlide.elements}</Typography>
 

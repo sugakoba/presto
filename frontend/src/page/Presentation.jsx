@@ -20,10 +20,11 @@ import {
     Code as CodeIcon,
     Slideshow as SlideshowIcon,
     ExpandMore as ExpandMoreIcon,
-    ArrowBack
+    CompareArrows as CompareArrowsIcon
   } from '@mui/icons-material';
 import ErrorPopUp from "../component/ErrorPopUp";
 import Slide from "../component/Slide";
+import Rearrange from '../component/Rearrange';
 
 const PresentationContainer = styled(Box)`
     background-color: #fbf1d7;
@@ -32,7 +33,7 @@ const PresentationContainer = styled(Box)`
 `;
 
 const TitleContainer = styled(Box)`
-    position: absolute;
+    position: relative;
     display: flex;
     justify-content: center;
     left: 50%;
@@ -45,16 +46,11 @@ const TitleContainer = styled(Box)`
     }
 `;
 
-const ButtonContainer = styled(Box)`
-    display: flex;
-    justify-content: end;
-    margin: 10px;
-`;
-
 const SaveButton = styled(Button)`
     background-color: #C46243;
     box-shadow: none;
     text-transform: none;
+    margin-left: 10px;
 `;
 
 const CancelButton = styled(Button)`
@@ -201,6 +197,7 @@ function Presentation({ token }) {
     const [errorMsg, setErrorMsg] = useState('');
     const [isErrorOpen, setErrorOpen] = useState(false);
     const [isDrawerOpen, setDrawerOpen] = useState(false);
+    const [isRearrangeOpen, setIsRearrangeOpen] = useState(false);
     const [fade, setFade] = useState(false); 
     const [toolExpand, setToolExpand] = useState(true);
     const inputRef = useRef(null);
@@ -335,6 +332,16 @@ function Presentation({ token }) {
             setErrorMsg(error.response.data.error);
             setErrorOpen(true);
         }
+    };
+
+    const toggleRearrangeScreen = () => {
+        setIsRearrangeOpen(!isRearrangeOpen);
+    };
+
+    const handleRearrange = (newSlides) => {
+        const updatedPresentation = { ...presentation, slides: newSlides };
+        setPresentation(updatedPresentation);
+        updatePresentationBackend(updatedPresentation);
     };
 
     /*********************************
@@ -483,29 +490,24 @@ function Presentation({ token }) {
     }
 
     const addNewSlide = async () => {
+        let newId = presentation.slides[presentation.slides.length - 1].id + 1;
+        const idExists = (id) => presentation.slides.some(slide => slide.id === id);
+        while (idExists(newId)) {
+            newId += 1; 
+        }
+
         const newSlide = {
-            id: presentation.slides[presentation.slides.length - 1].id + 1,
+            id: newId,
             backgroundStyle: presentation.defaultStyle,
             elements: []
         };
+
         const updatedSlides = [...presentation.slides, newSlide];
         const updatedPresentation = { ...presentation, slides: updatedSlides };
         setPresentation(updatedPresentation);
         updateSlideIndex(updatedSlides.length - 1);
         updatePresentationBackend(updatedPresentation);
     };
-
-    // const handleNextSlide = () => {
-    //     if (currentSlideIndex < presentation.slides.length - 1) {
-    //         updateSlideIndex(currentSlideIndex + 1);
-    //     }
-    // };
-
-    // const handlePrevSlide = () => {
-    //     if (currentSlideIndex > 0) {
-    //         updateSlideIndex(currentSlideIndex - 1);
-    //     }
-    // };
 
     const handleNextSlide = () => {
         const newIndex = (currentSlideIndex + 1) % presentation.slides.length;
@@ -721,21 +723,51 @@ function Presentation({ token }) {
                         </ListItemButton>
                     </DrawerContent>
                 </Drawer>
-                <ButtonContainer 
-                    sx={{
-                        display: 'flex', 
-                        '@media (max-width: 800px)': {
-                            display: 'none',
-                        },
-                    }}
-                >
-                    <SaveButton variant="contained" onClick={handleBack} startIcon={<ArrowBackIcon />}>
-                        Back
-                    </SaveButton>
-                    <CancelButton variant="outlined" onClick={handleDeleteClick} startIcon={<DeleteIcon />}>
-                        Delete
-                    </CancelButton>
-                </ButtonContainer>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box 
+                        sx={{
+                            display: 'flex', 
+                            '@media (max-width: 800px)': {
+                                display: 'none',
+                            },
+                            ml: 12,
+                            mt: 0
+                        }}
+                    >
+                        <SaveButton variant="contained" onClick={handleBack} startIcon={<ArrowBackIcon />}>
+                            Back
+                        </SaveButton>
+                        <CancelButton variant="outlined" onClick={handleDeleteClick} startIcon={<DeleteIcon />}>
+                            Delete
+                        </CancelButton>
+                    </Box>
+                    <Box 
+                        sx={{
+                            display: 'flex', 
+                            '@media (max-width: 800px)': {
+                                display: 'none',
+                            },
+                            mt: 0,
+                            mr: 2
+                        }}
+                    >
+                        <CancelButton aria-label="change-thumbnail" variant="outlined" component="label" startIcon={<ImageIcon />}>
+                            Change Thumbnail
+                            <input
+                                type="file"
+                                hidden
+                                accept="image/*"
+                                onChange={handleThumbnailUpload}
+                            />
+                        </CancelButton>
+                        <SaveButton aria-label="rearrange-slides" variant="contained" onClick={toggleRearrangeScreen} startIcon={<CompareArrowsIcon />}>
+                            Rearrange Slides
+                        </SaveButton>
+                        <SaveButton aria-label="presentation-preview" variant="contained" onClick={openPreview} startIcon={<SlideshowIcon />}>
+                            Preview
+                        </SaveButton>
+                    </Box>
+                </Box>
                 <TitleContainer>
                     <Typography variant="h4" sx={{ margin: '5px' }}>
                         {title}
@@ -744,27 +776,6 @@ function Presentation({ token }) {
                         <EditOutlinedIcon />
                     </IconButton>
                 </TitleContainer>
-                <ButtonContainer 
-                    sx={{
-                        display: 'flex', 
-                        '@media (max-width: 800px)': {
-                            display: 'none',
-                        },
-                    }}
-                >
-                    <SaveButton aria-label="presentation-preview" variant="contained" onClick={openPreview} startIcon={<SlideshowIcon />}>
-                        Preview
-                    </SaveButton>
-                    <CancelButton variant="outlined" component="label" startIcon={<ImageIcon />}>
-                        Change Thumbnail
-                        <input
-                            type="file"
-                            hidden
-                            accept="image/*"
-                            onChange={handleThumbnailUpload}
-                        />
-                    </CancelButton>
-                </ButtonContainer>
                 <Modal
                     open={showDeleteConfirmation}
                     onClose={cancelDelete}
@@ -1113,6 +1124,12 @@ function Presentation({ token }) {
                         </AddSlideButton>
                     </SlideContainer>
                 </Box>
+                <Rearrange 
+                    open={isRearrangeOpen} 
+                    onClose={toggleRearrangeScreen} 
+                    slides={presentation.slides} 
+                    onRearrange={handleRearrange}
+                />
 
                 <ErrorPopUp isOpen={isErrorOpen} onClose={handleCloseError} message = {errorMsg}>
                 </ErrorPopUp>
