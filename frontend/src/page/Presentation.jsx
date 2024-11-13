@@ -197,7 +197,7 @@ function Presentation({ token }) {
     const [isCodeModalOpen, setIsCodeModalOpen] = useState(false);
     const [imageInputType, setImageInputType] = useState('url');
     const [newTitle, setNewTitle] = useState(title);
-    const [currentSlideIndex, setCurrentSlideIndex] = useState(Number(slideNumber) - 1 || null);
+    const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
     const [errorMsg, setErrorMsg] = useState('');
     const [isErrorOpen, setErrorOpen] = useState(false);
     const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -937,7 +937,7 @@ function Presentation({ token }) {
                         </List>
                     </SlideListContainer>
                     <SlideContainer>
-                        {presentation.slides && currentSlideIndex !== null ? (
+                        {presentation.slides ? (
                             <Box sx={{ display: 'flex', margin: '10px' }}>
                                 <IconButton aria-label="delete" onClick={deleteCurrentSlide} sx={{ marginRight: 'auto' }}>
                                     <DeleteIcon />
@@ -978,16 +978,16 @@ function Presentation({ token }) {
                             </Box>
                         ) : (
                             <Typography variant="body1" sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                                Choose a slide to start editing!
+                                Loading slides...
                             </Typography>
                         )}
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignContent: 'center', width: '100%' }}>   
-                            {presentation.slides && presentation.slides.length >= 2 && currentSlideIndex !== null && (
+                            {presentation.slides && presentation.slides.length >= 2 && (
                                 <IconButton onClick={handlePrevSlide} disabled={currentSlideIndex === 0}>
                                         <KeyboardArrowLeftIcon />
                                 </IconButton>
                             )}
-                            {presentation.slides && currentSlideIndex !== null && (
+                            {presentation.slides && (
                                 <Slide 
                                     fade={fade}
                                     currentSlideIndex={currentSlideIndex} 
@@ -996,7 +996,7 @@ function Presentation({ token }) {
                                     updatePresentationBackend={updatePresentationBackend}
                                     setPresentation={setPresentation} />
                             )}
-                            {presentation.slides && presentation.slides.length >= 2 && currentSlideIndex !== null && (
+                            {presentation.slides && presentation.slides.length >= 2 && (
                                 <IconButton
                                     onClick={handleNextSlide}
                                     disabled={presentation.slides && currentSlideIndex === presentation.slides.length - 1}

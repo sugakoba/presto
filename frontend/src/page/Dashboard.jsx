@@ -118,7 +118,8 @@ function Dashboard({ token }) {
 
     const navigate = useNavigate();
     const handlePresentationClick = (presentationId) => {
-        navigate(`/dashboard/${presentationId}`);
+        // automatically navigate to the 1st slide when opening a presentation
+        navigate(`/dashboard/${presentationId}/1`);
     };
 
     const fetchPresentations = async () => {
