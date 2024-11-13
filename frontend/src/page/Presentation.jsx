@@ -876,6 +876,49 @@ function Presentation({ token }) {
                 </Modal>
 
 
+                <Modal open={isCodeModalOpen} onClose={handleCloseCodeModal}>
+                    <AddElementContainer>
+                        <AddElementTitle variant="h5" component="h2">
+                            Add New Code Block
+                        </AddElementTitle>
+                        <AddElementInput
+                            required
+                            onChange={(e) => setCodeHeight(e.target.value)}
+                            label="Enter Code Block Height"
+                            variant="outlined"
+                            margin="normal"
+                        />
+                        <AddElementInput
+                            required
+                            onChange={(e) => setCodeWidth(e.target.value)}
+                            label="Enter Code Block Width"
+                            variant="outlined"
+                            margin="normal"
+                        />
+
+                        <AddElementInput 
+                            required
+                            onChange={(e) => setCodeSize(e.target.value)}
+                            label="Enter New Code Size in em"
+                            variant="outlined"
+                            margin="normal"
+                        />
+
+                        <AddElementInput
+                            required
+                            onChange={(e) => setCode(e.target.value)}
+                            label="Enter New Code Block"
+                            variant="outlined"
+                            margin="normal"
+                            multiline
+                            minRows={4}
+                            fullWidth
+
+                        />
+                        
+                    </AddElementContainer>
+                </Modal>
+
 
                 <Box sx={{ display: 'flex', height: 'calc(100vh - 120px)', position: 'relative' }}>
                     <SlideListContainer>
