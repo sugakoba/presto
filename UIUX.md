@@ -1,4 +1,4 @@
-UI/UX principle:
+Slide transitioning is available on both editing slide page and preview.
 
 Visibility:
 
