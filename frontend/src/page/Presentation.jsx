@@ -830,3 +830,155 @@ function Presentation({ token }) {
           onClose={cancelDelete}
           aria-labelledby="delete-confirmation-title"
         >
+          <ConfirmDelete>
+            <Typography id="delete-confirmation-title" variant="h6">
+                            Are you sure?
+            </Typography>
+            <Button onClick={deletePresentation} color="error">
+                            Yes
+            </Button>
+            <Button onClick={cancelDelete}>No</Button>
+          </ConfirmDelete>
+        </Modal>
+        <Modal open={isModalOpen} onClose={handleCloseModal}>
+          <EditTitleContainer>
+            <EditTitle variant="h5" component="h2">
+                            Edit Title
+            </EditTitle>
+            <EditName
+              required
+              inputRef={inputRef} 
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              label="Enter new title"
+              variant="outlined"
+              margin="normal"
+            />
+            <div>
+              <SaveButton variant="contained" onClick={handleSaveTitle} startIcon={<CheckIcon />}>
+                                Save
+              </SaveButton>
+              <CancelButton variant="outlined" onClick={handleCloseModal} startIcon={<CloseIcon />}>
+                                Cancel
+              </CancelButton>
+            </div>
+          </EditTitleContainer>
+        </Modal>
+        {/* Need to edit here to add text model. */}
+
+        <Modal open={isTextModalOpen} onClose={handleCloseTextModal}>
+          <AddElementContainer>
+            <AddElementTitle variant="h5" component="h2">
+                            Add New Text
+            </AddElementTitle>
+            <AddElementInput 
+              required
+              onChange={(e) => setTextAreaHeight(e.target.value)}
+              label="Enter Text Area Height"
+              variant="outlined"
+              margin="normal"
+            />
+            <AddElementInput 
+              required
+              onChange={(e) => setTextAreaWidth(e.target.value)}
+              label="Enter Text Area Width"
+              variant="outlined"
+              margin="normal"
+            />
+            <AddElementInput 
+              required
+              onChange={(e) => setText(e.target.value)}
+              label="Enter New Text Content"
+              variant="outlined"
+              margin="normal"
+            />
+            <AddElementInput 
+              required
+              onChange={(e) => setTextSize(e.target.value)}
+              label="Enter New Text Size In em"
+              variant="outlined"
+              margin="normal"
+            />
+            <AddElementInput 
+              required
+              onChange={(e) => setTextColor(e.target.value)}
+              label="Enter New Text Color"
+              variant="outlined"
+              margin="normal"
+            />
+            <div>
+              <SaveButton variant="contained" onClick={handleNewText} startIcon={<CheckIcon />}>
+                                Save
+              </SaveButton>
+              <CancelButton variant="outlined" onClick={handleCloseTextModal} startIcon={<CloseIcon />}>
+                                Cancel
+              </CancelButton>
+            </div>
+                        
+          </AddElementContainer>
+        </Modal>
+
+
+        <Modal open={isImageModalOpen} onClose={handleCloseImageModal}>
+          <AddElementContainer>
+            <AddElementTitle variant="h5" component="h2">
+                            Add New Image
+            </AddElementTitle>
+            <AddElementInput
+              required
+              onChange={(e) => setImageHeight(e.target.value)}
+              label="Enter Image Height"
+              variant="outlined"
+              margin="normal"
+            />
+            <AddElementInput
+              required
+              onChange={(e) => setImageWidth(e.target.value)}
+              label="Enter Image Width"
+              variant="outlined"
+              margin="normal"
+            />
+            <div sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <RadioGroup
+                row
+                value={imageInputType}
+                onChange={(e) => setImageInputType(e.target.value)}
+              >
+                <FormControlLabel value="url" control={<Radio />} label="Enter Image URL" />
+                <FormControlLabel value="file" control={<Radio />} label="Upload Image File" />
+              </RadioGroup>
+              {imageInputType === 'url' ? (
+                <AddElementInput
+                  onChange={(e) => setImageAddress(e.target.value)}
+                  label="Enter Image URL"
+                  variant="outlined"
+                  margin="normal"
+                />
+              ) : (
+                <Button variant="outlined" component="label" sx={{ marginTop: 2 }} >
+                                    Upload Image File
+                  <input type="file" accept="image/*" hidden onChange={handleFileChange} />
+                </Button>
+              )}
+            </div>
+
+
+            <AddElementInput
+              required
+              onChange={(e) => setImageDescription(e.target.value)}
+              label="Enter Alt Description"
+              variant="outlined"
+              margin="normal"
+            />
+            <div>
+              <SaveButton variant="contained" onClick={handleNewImage} startIcon={<CheckIcon />}>
+                                Save
+              </SaveButton>
+              <CancelButton variant="outlined" onClick={handleCloseImageModal} startIcon={<CloseIcon />}>
+                                Cancel
+              </CancelButton>
+            </div>
+                        
+          </AddElementContainer>
+        </Modal>
+
