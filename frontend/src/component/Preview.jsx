@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';

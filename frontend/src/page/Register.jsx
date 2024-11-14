@@ -39,7 +39,7 @@ const BackButton = styled(Button) `
     left: 10px;
 `;
 
-function Register({ token, handleSuccess }) {
+function Register({ handleSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');

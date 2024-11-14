@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { Box, Button, Typography, Modal, TextField, IconButton, List, Card, CardContent, Fab, Drawer, ListItemButton, ListItemIcon, ListItemText, Accordion, AccordionSummary, AccordionDetails, Checkbox, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import { Box, Button, Typography, Modal, TextField, IconButton, List, Card, CardContent, Fab, Drawer, ListItemButton, ListItemIcon, ListItemText, Checkbox, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 import axios from 'axios';
 import {
   EditOutlined as EditOutlinedIcon,
@@ -19,7 +19,6 @@ import {
   VideoCameraBack as VideoIcon,
   Code as CodeIcon,
   Slideshow as SlideshowIcon,
-  ExpandMore as ExpandMoreIcon,
   CompareArrows as CompareArrowsIcon,
   History as HistoryIcon
 } from '@mui/icons-material';
@@ -686,7 +685,7 @@ function Presentation({ token }) {
     window.open(`/dashboard/${presentationId}/preview/${slidePreviewNum}`, "_blank");
   };    
 
-  const toggleDrawer = (open) => (event) => {
+  const toggleDrawer = (open) => () => {
     setDrawerOpen(open);
   };
 

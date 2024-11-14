@@ -25,7 +25,7 @@ const WelcomeContainer = styled(Box)`
     padding: 20px;
 `;
 
-function Welcome({ token }) {
+function Welcome() {
 
 
   const navigate = useNavigate();

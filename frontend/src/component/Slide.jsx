@@ -422,7 +422,7 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
         onBackgroundChange={handleBackgroundChange}
       />
 
-<Modal open={isTextEditModalOpen} onClose={handleCloseTextEdit}>
+      <Modal open={isTextEditModalOpen} onClose={handleCloseTextEdit}>
         <AddElementContainer>
           <AddElementTitle variant="h5" component="h2">
                         Edit this Text

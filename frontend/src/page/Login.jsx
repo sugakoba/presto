@@ -40,7 +40,7 @@ const BackButton = styled(Button) `
 `;
 
 
-function Login({ token, handleSuccess }) {
+function Login({ handleSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isErrorOpen, setErrorOpen] = useState(false);

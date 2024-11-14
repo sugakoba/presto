@@ -20,12 +20,12 @@ const LogoutButton = ({ token, setToken }) => {
     axios.post('http://localhost:5005/admin/auth/logout', {}, {
       headers: { Authorization: `Bearer ${token}` }
     })
-      .then((response) => {
+      .then(() => {
         localStorage.removeItem('token');
         setToken(null);
         navigate('/login');
       })
-      .catch((error) => {
+      .catch(() => {
       });
   }
     
