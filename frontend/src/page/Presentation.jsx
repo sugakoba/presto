@@ -1004,7 +1004,7 @@ function Presentation({ token }) {
                         <AddElementInput
                             required
                             onChange={(e) => setVideoURL(e.target.value)}
-                            label="Enter Video URL (optional)"
+                            label="Enter Video URL"
                             variant="outlined"
                             margin="normal"
                         />
