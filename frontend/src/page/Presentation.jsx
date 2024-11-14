@@ -294,3 +294,174 @@ function Presentation({ token }) {
     setShowDeleteConfirmation(false);
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageAddress(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const updateSlideIndex = (index) => {
+    setCurrentSlideIndex(index);
+    navigate(`/dashboard/${presentationId}/${index + 1}`);
+  };
+
+  const handleSlideChange = (newIndex) => {
+    setFade(true); 
+    setTimeout(() => {
+      setCurrentSlideIndex(newIndex); 
+      setFade(false); 
+      navigate(`/dashboard/${presentationId}/${newIndex + 1}`, { replace: true });
+    }, 500); 
+  };
+
+  const updatePresentationBackend = async (updatedPresentation) => {
+    saveVersion();
+    try {
+      const updatePresentations = presentations.map((presentation) =>
+        Number(presentation.id) === Number(presentationId)
+          ? updatedPresentation
+          : presentation
+      );
+      const response = await axios.put('http://localhost:5005/store', 
+        { store: { presentations: updatePresentations } },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+        }
+      );
+      if (response.status === 200) {
+        setPresentations(updatePresentations);
+      }
+    } catch (error) {
+      setErrorMsg(error.response.data.error);
+      setErrorOpen(true);
+    }
+  };
+
+  const toggleRearrangeScreen = () => {
+    setIsRearrangeOpen(!isRearrangeOpen);
+  };
+
+  const handleRearrange = (newSlides) => {
+    const updatedPresentation = { ...presentation, slides: newSlides };
+    setPresentation(updatedPresentation);
+    updatePresentationBackend(updatedPresentation);
+  };
+
+  /*********************************
+    **********************************
+    **** Change Slide layout here ****
+    **********************************
+    **********************************/
+
+    
+  const handleNewText = async () => {
+    let elementLength = presentation.slides[currentSlideIndex].elements.length;
+
+    if (elementLength === 0) {
+      elementLength = 1;
+    } else {
+      elementLength = presentation.slides[currentSlideIndex].elements[elementLength - 1].id + 1
+    }
+
+    const newText = {
+      id: elementLength,
+      type: "text",
+      height: textAreaHeight,
+      width: textAreaWidth,
+      text: text,
+      size: textSize,
+      color: textColor,
+      xpos: 0,
+      ypos: 0
+    }
+
+    const updatedElements = [...presentation.slides[currentSlideIndex].elements, newText];
+    const updatedSlides = presentation.slides.map((slide, index) =>
+      index === currentSlideIndex
+        ? { ...slide, elements: updatedElements }
+        : slide
+    );
+
+    const updatedPresentation = { ...presentation, slides: updatedSlides };
+
+    setPresentation(updatedPresentation);
+    updatePresentationBackend(updatedPresentation);
+    handleCloseTextModal();
+  };
+
+  const handleNewImage = async () => {
+    let elementLength = presentation.slides[currentSlideIndex].elements.length;
+
+    if (elementLength === 0) {
+      elementLength = 1;
+    } else {
+      elementLength = presentation.slides[currentSlideIndex].elements[elementLength - 1].id + 1
+    }
+
+    const newImage = {
+      id: elementLength,
+      type: "image",
+      height: imageHeight,
+      width: imageWidth,
+      url: imageAddress,
+      description: imageDescription,
+      xpos: 0,
+      ypos: 0
+    }
+
+    const updatedElements = [...presentation.slides[currentSlideIndex].elements, newImage];
+    const updatedSlides = presentation.slides.map((slide, index) =>
+      index === currentSlideIndex
+        ? { ...slide, elements: updatedElements }
+        : slide
+    );
+
+    const updatedPresentation = { ...presentation, slides: updatedSlides };
+
+    setPresentation(updatedPresentation);
+    updatePresentationBackend(updatedPresentation);
+    handleCloseImageModal();
+
+  }
+
+  const handleNewVideo = async() => {
+    let elementLength = presentation.slides[currentSlideIndex].elements.length;
+
+    if (elementLength === 0) {
+      elementLength = 1;
+    } else {
+      elementLength = presentation.slides[currentSlideIndex].elements[elementLength - 1].id + 1
+    }
+
+    const newVideo = {
+      id: elementLength,
+      type: "video",
+      height: videoHeight,
+      width: videoWidth,
+      url: videoURL,
+      autoplay: videoAuto,
+      xpos: 0,
+      ypos: 0
+    }
+
+    const updatedElements = [...presentation.slides[currentSlideIndex].elements, newVideo];
+    const updatedSlides = presentation.slides.map((slide, index) =>
+      index === currentSlideIndex
+        ? { ...slide, elements: updatedElements }
+        : slide
+    );
+
+    const updatedPresentation = { ...presentation, slides: updatedSlides };
+
+    setPresentation(updatedPresentation);
+    updatePresentationBackend(updatedPresentation);
+    handleCloseVideoModal();
+  }
+
