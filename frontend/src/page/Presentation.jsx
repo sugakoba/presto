@@ -661,3 +661,172 @@ function Presentation({ token }) {
     setIsRevisionHistoryOpen(!isRevisionHistoryOpen);
   };
 
+  const saveVersion = () => {
+    const now = new Date();
+    if (!lastSaveTime || (now - lastSaveTime >= 60000)) { 
+      const newVersion = {
+        timestamp: now,
+        slides: [...presentation.slides]
+      };
+      setRevisionHistory(prevHistory => [...prevHistory, newVersion]);
+      setLastSaveTime(now);
+    }
+  };    
+
+  const handleRestore = (slides) => {
+    setPresentation(prevPresentation => ({
+      ...prevPresentation,
+      slides: slides
+    }));
+    setIsRevisionHistoryOpen(false); 
+  };
+
+  const openPreview = () => {
+    const slidePreviewNum = (slideNumber || 1);
+    window.open(`/dashboard/${presentationId}/preview/${slidePreviewNum}`, "_blank");
+  };    
+
+  const toggleDrawer = (open) => (event) => {
+    setDrawerOpen(open);
+  };
+
+  useEffect(() => {
+    fetchPresentationInfo();
+  }, []);
+
+  useEffect(() => {
+    if (isModalOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isModalOpen]);
+
+  useEffect(() => {
+    if (slideNumber !== null && presentation.slides && presentation.slides[Number(slideNumber) - 1]) {
+      setCurrentSlideIndex(Number(slideNumber) - 1);
+    }
+  }, [presentation.slides, slideNumber]);
+
+  return (
+    <>
+      <PresentationContainer>
+        <IconButton 
+          onClick={toggleDrawer(true)} 
+          sx={{
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            display: 'none', 
+            '@media (max-width: 1000px)': {
+              display: 'block', 
+            },
+          }} 
+        >
+          <MenuIcon />
+        </IconButton>
+        <Drawer anchor="right" open={isDrawerOpen} onClose={toggleDrawer(false)}>
+          <DrawerContent>
+            <ListItemButton variant="contained" onClick={handleBack} fullWidth>
+              <ListItemIcon>
+                <ArrowBackIcon />
+              </ListItemIcon>
+              <ListItemText primary="Back to Dashboard" />
+            </ListItemButton>
+            <ListItemButton variant="outlined" onClick={handleDeleteClick} fullWidth>
+              <ListItemIcon>
+                <DeleteIcon />
+              </ListItemIcon>
+              <ListItemText primary="Delete" />
+            </ListItemButton>
+            <ListItemButton variant="outlined" onClick={openPreview} fullWidth>
+              <ListItemIcon>
+                <SlideshowIcon />
+              </ListItemIcon>
+              <ListItemText primary="Preview" />
+            </ListItemButton>
+            <ListItemButton variant="outlined" onClick={toggleRearrangeScreen} fullWidth>
+              <ListItemIcon>
+                <CompareArrowsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Rearrange Slides" />
+            </ListItemButton>
+            <ListItemButton variant="outlined" onClick={toggleRevisionHistory} fullWidth>
+              <ListItemIcon>
+                <HistoryIcon />
+              </ListItemIcon>
+              <ListItemText primary="Version History" />
+            </ListItemButton>
+            <ListItemButton variant="outlined" component="label" fullWidth>
+              <ListItemIcon>
+                <ImageIcon />
+              </ListItemIcon>
+              <ListItemText primary="Change Thumbnail" />
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handleThumbnailUpload}
+              />
+            </ListItemButton>
+          </DrawerContent>
+        </Drawer>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box 
+            sx={{
+              display: 'flex', 
+              '@media (max-width: 1000px)': {
+                display: 'none',
+              },
+              ml: 12,
+              mt: 0
+            }}
+          >
+            <SaveButton variant="contained" onClick={handleBack} startIcon={<ArrowBackIcon />}>
+                            Back
+            </SaveButton>
+            <CancelButton variant="outlined" onClick={handleDeleteClick} startIcon={<DeleteIcon />}>
+                            Delete
+            </CancelButton>
+          </Box>
+          <Box 
+            sx={{
+              display: 'flex', 
+              '@media (max-width: 1000px)': {
+                display: 'none',
+              },
+              mt: 0,
+              mr: 2
+            }}
+          >
+            <CancelButton aria-label="change-thumbnail" variant="outlined" component="label" startIcon={<ImageIcon />}>
+                            Change Thumbnail
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handleThumbnailUpload}
+              />
+            </CancelButton>
+            <SaveButton aria-label="rearrange-slides" variant="contained" onClick={toggleRearrangeScreen} startIcon={<CompareArrowsIcon />}>
+                            Rearrange Slides
+            </SaveButton>
+            <SaveButton aria-label="rearrange-slides" variant="contained" onClick={toggleRevisionHistory} startIcon={<HistoryIcon />}>
+                            Version History
+            </SaveButton>
+            <SaveButton aria-label="presentation-preview" variant="contained" onClick={openPreview} startIcon={<SlideshowIcon />}>
+                            Preview
+            </SaveButton>
+          </Box>
+        </Box>
+        <TitleContainer>
+          <Typography variant="h4" sx={{ margin: '5px' }}>
+            {title}
+          </Typography>
+          <IconButton onClick={handleOpenModal} aria-label="edit title">
+            <EditOutlinedIcon />
+          </IconButton>
+        </TitleContainer>
+        <Modal
+          open={showDeleteConfirmation}
+          onClose={cancelDelete}
+          aria-labelledby="delete-confirmation-title"
+        >
