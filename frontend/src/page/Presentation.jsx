@@ -1066,6 +1066,9 @@ function Presentation({ token }) {
                             multiline
                             minRows={4}
                             fullWidth
+                            sx={{
+                                overflow: "auto",
+                            }}
 
                         />
 

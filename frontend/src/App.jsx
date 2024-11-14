@@ -31,8 +31,7 @@ export default App
 //port: 5005
 
 // TODO: 
-// Finish off 2.4.  
-// Overflow when type in more code. 
+// Overflow when type in more code. - text cut off
 // Need to have a functionality of check input. 
 // Need to have usuability of poping up confirm delete element. 
 // 
