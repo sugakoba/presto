@@ -25,6 +25,12 @@ so for users on mobile devices, they can just open the menu and find the action 
 want to perform. Rather than all the icons been squashed together which make it hard
 to press and see. 
 
+Color picker panel is available for users to choose from a large variety of colors for background.
+
+Both image upload and url is available for adding images to slides.
+
+When there are no presentations on dashboard, a message will be shown for users to create one. When slides are not fully loaded onto the page, there is a message showing "loading slides".
+
 Affordance:
 
 We also made each action button into bright colors or stand out colors, so it very
@@ -32,6 +38,8 @@ easy for user to find these buttons.
 
 The button also hovers, when user put the cursor on the button. This way the user
 knows they can press on it. 
+
+Aria labels for all buttons on presentation page (above slide editing area)
 
 Feedback:
 

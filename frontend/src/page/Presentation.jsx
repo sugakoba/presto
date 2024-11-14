@@ -690,6 +690,21 @@ function Presentation({ token }) {
   };
 
   useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'ArrowRight') {
+        handleNextSlide();
+      } else if (event.key === 'ArrowLeft') {
+        handlePrevSlide();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [currentSlideIndex, presentation.slides]);
+
+  useEffect(() => {
     fetchPresentationInfo();
   }, []);
 

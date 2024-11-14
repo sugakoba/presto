@@ -1,3 +1,11 @@
-Slide transitioning is available on both editing slide page and preview.
-Our webiste layout and design is probably better than most of people, and we have
+- Slide transitioning is available on both editing slide page and preview.
+- Menu bar replace buttons on presentation page for small screens.
+- Eye-friendly color scheme with light yellow background.
+- More than 3 fonts to choose for text boxes.
+- Cancel buttons for editing modals such as adding text, change thumbnail etc.
+- Color picker panel is available for users to choose from a large variety of colors for background.
+- Both image upload and url is available for adding images to slides.
+- When there are no presentations on dashboard, a message will be shown for users to create one. When slides are not fully loaded onto the page, there is a message showing "loading slides".
+- Buttons with the slide index is available as a list on the left of the slide edit panel, allow users to navigate to a particular slide immediately.
+- Our website layout and design is probably better than most of people, and we have
 put in effort in designing the website. 
