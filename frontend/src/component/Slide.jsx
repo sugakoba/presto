@@ -261,3 +261,164 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
     setPresentation(updatedPresentation);
   };
 
+  return (
+    <>
+      <SlideBox 
+        sx={{
+          opacity: fade ? 0 : 1,
+          transition: 'opacity 0.5s ease-in-out',
+          background: currentSlide.backgroundStyle.includes('url(') ? `center / cover no-repeat ${currentSlide.backgroundStyle}` : currentSlide.backgroundStyle
+        }}
+      >
+        <Box sx={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10 }} >
+          <IconButton 
+            onClick={handleOpenFontModal}
+            sx={{
+              mr: 2,
+              backgroundColor: 'white',
+              width: { xs: 24, sm: 32, md: 40 }, 
+              height: { xs: 24, sm: 32, md: 40 }, 
+              '&:hover': {
+                backgroundColor: '#fbf1d7',
+              }
+            }}
+          >
+            <FontDownloadIcon sx={{ fontSize: { xs: 16, sm: 20, md: 24 } }}/> 
+          </IconButton>
+                    
+          <IconButton 
+            onClick={handleOpenPicker}
+            sx={{
+              backgroundColor: 'white',
+              width: { xs: 24, sm: 32, md: 40 },
+              height: { xs: 24, sm: 32, md: 40 },
+              '&:hover': {
+                backgroundColor: '#fbf1d7',
+              }
+            }}
+          >
+            <ColorizeIcon sx={{ fontSize: { xs: 16, sm: 20, md: 24 } }}/> 
+          </IconButton>
+        </Box>
+
+
+        <Modal open={isFontModalOpen} onClose={handleCloseFontModal}>
+          <Box sx={{ p: 4, backgroundColor: 'white', borderRadius: 1, width: '300px', margin: 'auto', mt: '10%', position: 'relative' }}>
+            <IconButton onClick={handleCloseFontModal} sx={{ position: 'absolute', top: '10px', right: '10px' }}>
+              <CloseIcon />
+            </IconButton>
+            <Typography variant="h6" gutterBottom>Choose Font</Typography>
+            <RadioGroup
+              value={fontFamily}
+              onChange={handleFontFamilyChange}
+            >
+              <FormControlLabel value="Arial" control={<Radio />} label="Arial" />
+              <FormControlLabel value="Roboto" control={<Radio />} label="Roboto" />
+              <FormControlLabel value="Courier New" control={<Radio />} label="Courier New" />
+              <FormControlLabel value="Georgia" control={<Radio />} label="Georgia" />
+              <FormControlLabel value="Helvetica Neue" control={<Radio />} label="Helvetica Neue" />
+            </RadioGroup>
+          </Box>
+        </Modal>
+
+        {/* Edit below is required */}
+        {currentSlide.elements.map((element) => {
+          const commonStyles = {
+            top: `${element.ypos}%`,
+            left: `${element.xpos}%`,
+            height: `${element.height}%`,
+            width: `${element.width}%`,
+            zIndex: element.id,
+          };
+
+          if (element.type === "code") {
+            const codingLanguage = hljs.highlightAuto(element.code).language || 'plaintext';
+            return (
+              <TextElement
+                key={element.id}
+                onDoubleClick={() => handleElementEdit(element)}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  handleElementDelete(element);
+                }}
+                sx={{
+                  ...commonStyles,
+                  fontSize: `${element.size}em`,
+                  overflow: 'auto',
+                }}
+              >
+                <SyntaxHighlighter
+                  language={codingLanguage}
+                  style={docco}
+                  wrapLongLines
+                >
+                  {element.code}
+                </SyntaxHighlighter>
+              </TextElement>
+            );
+          }
+
+          return element.type === "text" ? (
+            <TextElement
+              key={element.id}
+              onDoubleClick={() => handleElementEdit(element)}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                handleElementDelete(element);
+              }}
+              sx={{
+                ...commonStyles,
+                fontSize: `${element.size}em`,
+                color: element.color,
+                fontFamily: currentSlide.fontFamily
+              }}
+            >
+              {element.text}
+            </TextElement>
+          ) : element.type === "image" ? (
+            <TextElement
+              key={element.id}
+              onDoubleClick={() => handleElementEdit(element)}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                handleElementDelete(element);
+              }}
+              sx={commonStyles}
+            >
+              <img
+                src={element.url}
+                alt={element.description}
+                sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+
+            </TextElement>
+          ) : element.type === "video" ? (
+            <TextElement
+              key={element.id}
+              onDoubleClick={() => handleElementEdit(element)}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                handleElementDelete(element);
+              }}
+              sx={commonStyles}
+            >
+              <iframe
+                width="100%"
+                height="100%"
+                src={`${element.url}?rel=0&modestbranding=1&mute=1&showinfo=0&controls=0&autoplay=${element.autoplay ? 1 : 0}`}
+                allow="autoplay"
+              />
+            </TextElement>
+          ) : null;
+        })}
+
+        <SlideNumber sx={{ width: { xs: 24, sm: 32, md: 40 }, height: { xs: 24, sm: 32, md: 40 } }}>
+          <Typography sx={{ fontSize: { xs: 10, sm: 12, md: 14 } }}>{currentSlideIndex + 1}</Typography>
+        </SlideNumber>
+      </SlideBox>
+      <BackgroundPicker
+        isOpen={isPickerOpen}
+        onClose={handleClosePicker}
+        onBackgroundChange={handleBackgroundChange}
+      />
+
