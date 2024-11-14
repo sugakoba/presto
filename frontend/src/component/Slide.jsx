@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, IconButton, Modal, TextField, Button, Radio, RadioGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import BackgroundPicker from './BackgroundPicker';
@@ -11,7 +11,6 @@ import {
 import hljs from 'highlight.js';
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import Draggable from 'react-draggable';
 const SlideBox = styled(Box)`
     position: relative;
     width: 75%;
@@ -118,8 +117,6 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
     const [selectedElement, setSelectedElement] = useState({});
 
     const [imageInputType, setImageInputType] = useState('url');
-
-    const slideRef = useRef(null);
 
     const handleOpenPicker = () => {
         setIsPickerOpen(true);
@@ -264,29 +261,9 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
         setPresentation(updatedPresentation);
     };
 
-    const handleStop = (data) => {
-        if (slideRef.current) {
-            const parentWidth = slideRef.current.offsetWidth;
-            const parentHeight = slideRef.current.offsetHeight;
-            const relativeX = (data.x / parentWidth) * 100;
-            const relativeY = (data.y / parentHeight) * 100;
-
-            setSelectedElement((prev) => ({
-                ...prev,
-                xpos: relativeX,
-                ypos: relativeY,
-            }));
-        }
-    };
-
-    useEffect(() => {
-        handleElementSave();
-    }, [selectedElement]); 
-
     return (
         <>
             <SlideBox 
-                ref={slideRef}
                 sx={{
                     opacity: fade ? 0 : 1,
                     transition: 'opacity 0.5s ease-in-out',
@@ -357,38 +334,27 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                     if (element.type === "code") {
                         const codingLanguage = hljs.highlightAuto(element.code).language || 'plaintext';
                         return (
-                            <Draggable
-                                axis="both"
-                                bounds="parent"
-                                onStop={(e, data) => handleStop(data)}
-                                defaultPosition={{
-                                    x: slideRef.current ? (element.xpos / 100) * slideRef.current.offsetWidth : 0,
-                                    y: slideRef.current ? (element.ypos / 100) * slideRef.current.offsetHeight : 0,
+                            <TextElement
+                                key={element.id}
+                                onDoubleClick={() => handleElementEdit(element)}
+                                onContextMenu={(e) => {
+                                    e.preventDefault();
+                                    handleElementDelete(element);
+                                }}
+                                sx={{
+                                    ...commonStyles,
+                                    fontSize: `${element.size}em`,
+                                    overflow: 'auto',
                                 }}
                             >
-                                <TextElement
-                                    key={element.id}
-                                    onDoubleClick={() => handleElementEdit(element)}
-                                    onContextMenu={(e) => {
-                                        e.preventDefault();
-                                        handleElementDelete(element);
-                                    }}
-                                    sx={{
-                                        ...commonStyles,
-                                        fontSize: `${element.size}em`,
-                                        overflow: 'auto',
-                                    }}
+                                <SyntaxHighlighter
+                                    language={codingLanguage}
+                                    style={docco}
+                                    wrapLongLines
                                 >
-                                    <SyntaxHighlighter
-                                        language={codingLanguage}
-                                        style={docco}
-                                        wrapLongLines
-                                    >
-                                        {element.code}
-                                    </SyntaxHighlighter>
-                                </TextElement>
-                            </Draggable>
-
+                                    {element.code}
+                                </SyntaxHighlighter>
+                            </TextElement>
                         );
                     }
 
