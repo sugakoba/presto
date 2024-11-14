@@ -35,6 +35,16 @@ const SlideNumber = styled(Box)`
     border-radius: 5px;
 `;
 
+const TextElement = styled(Box)`
+    position: absolute;
+    text-align: left;
+    line-height: 1;
+    padding: 0px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+`;
+
 const Preview = ({ token }) => {
     const [fade, setFade] = useState(false); 
     const [slides, setSlides] = useState([]);
@@ -42,11 +52,6 @@ const Preview = ({ token }) => {
     const { presentationId, slideNumber } = useParams();
     const currentSlide = slides[currentSlideIndex];
     const navigate = useNavigate();
-
-    // const updateSlideIndex = (index) => {
-    //     setCurrentSlideIndex(index);
-    //     navigate(`/dashboard/${presentationId}/preview/${index + 1}`, { replace: true });
-    // };
 
     const fetchSlides = async () => {
         try {
@@ -109,7 +114,69 @@ const Preview = ({ token }) => {
                     }}
                 >
                     {/* to modify after 2.3 has been setup */}
-                    <Typography variant="h4" color="white">{currentSlide.elements}</Typography>
+                    {/* <Typography variant="h4" color="white">{currentSlide.elements}</Typography> */}
+                    {currentSlide.elements.map((element) => {
+                        const commonStyles = {
+                            top: `${element.ypos}%`,
+                            left: `${element.xpos}%`,
+                            height: `${element.height}%`,
+                            width: `${element.width}%`,
+                            zIndex: element.id,
+                        };
+
+                        return element.type === "text" ? (
+                            <TextElement
+                                key={element.id}
+                                onDoubleClick={() => handleElementEdit(element)}
+                                onContextMenu={(e) => {
+                                    e.preventDefault();
+                                    handleElementDelete(element);
+                                }}
+                                style={{
+                                    ...commonStyles,
+                                    fontSize: `${element.size}em`,
+                                    color: element.color,
+                                    fontFamily: currentSlide.fontFamily
+                                }}
+                            >
+                                {element.text}
+                            </TextElement>
+                        ) : element.type === "image" ? (
+                            <TextElement
+                                key={element.id}
+                                onDoubleClick={() => handleElementEdit(element)}
+                                onContextMenu={(e) => {
+                                    e.preventDefault();
+                                    handleElementDelete(element);
+                                }}
+                                style={commonStyles}
+                            >
+                                <img
+                                    src={element.url}
+                                    alt={element.description}
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
+
+                            </TextElement>
+                        ) : element.type === "video" ? (
+                            <TextElement
+                                key={element.id}
+                                onDoubleClick={() => handleElementEdit(element)}
+                                onContextMenu={(e) => {
+                                    e.preventDefault();
+                                    handleElementDelete(element);
+                                }}
+                                style={commonStyles}
+                            >
+                                <iframe
+                                    width="100%"
+                                    height="100%"
+                                    src={`${element.url}?autoplay=${element.auto ? 1 : 0}`}
+                                    allow='autoplay'
+                                />
+                            </TextElement>
+                        ) : null;
+                    })}
 
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                         <IconButton onClick={handlePrevSlide} disabled={currentSlideIndex === 0} sx={{ bgcolor: '#FFFFFF80', ml: 2 }}>

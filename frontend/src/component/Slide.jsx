@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Box, Typography, IconButton, Modal, TextField, Button, Radio, RadioGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import ColorizeIcon from '@mui/icons-material/Colorize';
 import BackgroundPicker from './BackgroundPicker';
 import {
     Check as CheckIcon,
     Close as CloseIcon,
+    FontDownload as FontDownloadIcon,
+    Colorize as ColorizeIcon
 } from '@mui/icons-material';
-import YouTube from 'react-youtube';
+// import YouTube from 'react-youtube';
 const SlideBox = styled(Box)`
     position: relative;
     width: 75%;
@@ -22,8 +23,6 @@ const SlideBox = styled(Box)`
     justify-content: center;
     margin: auto;
     margin-top: 0;
-    opacity: ${(props) => (props.fade ? 0 : 1)};
-    transition: opacity 0.5s ease-in-out;
 `;
 
 const SlideNumber = styled(Box)`
@@ -108,6 +107,8 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
     const currentSlide = slides[currentSlideIndex];
     const [backgroundStyle, setBackgroundStyle] = useState(currentSlide?.backgroundStyle || 'white');
     const [isTextEditModalOpen, setTextEditModalOpen] = useState(false);
+    const [isFontModalOpen, setIsFontModalOpen] = useState(false);
+    const [fontFamily, setFontFamily] = useState('Arial');
     const [isImageEditModalOpen, setImageEditModalOpen] = useState(false);
     const [isVideoEditModalOpen, setVideoEditModalOpen] = useState(false);
     const [isCodeEditModalOpen, setCodeEditModalOpen] = useState(false);
@@ -121,6 +122,14 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
 
     const handleClosePicker = () => {
         setIsPickerOpen(false);
+    };
+
+    const handleOpenFontModal = () => {
+        setIsFontModalOpen(true);
+    };
+
+    const handleCloseFontModal = () => {
+        setIsFontModalOpen(false);
     };
 
     const handleCloseTextEdit = () => {
@@ -234,15 +243,81 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
         handleClosePicker();
     };
 
+    const handleFontFamilyChange = (event) => {
+        const selectedFont = event.target.value;
+        setFontFamily(selectedFont);
+
+        const updatedSlides = slides.map((slide, index) =>
+            index === currentSlideIndex
+                ? { ...slide, fontFamily: selectedFont }
+                : slide
+        );
+
+        const updatedPresentation = { ...presentation, slides: updatedSlides };
+        updatePresentationBackend(updatedPresentation);
+        setPresentation(updatedPresentation);
+    };
 
     return (
         <>
             <SlideBox 
-                fade={fade} 
                 sx={{
+                    opacity: fade ? 0 : 1,
+                    transition: 'opacity 0.5s ease-in-out',
                     background: currentSlide.backgroundStyle.includes('url(') ? `center / cover no-repeat ${currentSlide.backgroundStyle}` : currentSlide.backgroundStyle
                 }}
             >
+                <Box sx={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10 }} >
+                    <IconButton 
+                        onClick={handleOpenFontModal}
+                        sx={{
+                            mr: 2,
+                            backgroundColor: 'white',
+                            width: { xs: 24, sm: 32, md: 40 }, 
+                            height: { xs: 24, sm: 32, md: 40 }, 
+                            '&:hover': {
+                                backgroundColor: '#fbf1d7',
+                            }
+                        }}
+                    >
+                        <FontDownloadIcon sx={{ fontSize: { xs: 16, sm: 20, md: 24 } }}/> 
+                    </IconButton>
+                    
+                    <IconButton 
+                        onClick={handleOpenPicker}
+                        sx={{
+                            backgroundColor: 'white',
+                            width: { xs: 24, sm: 32, md: 40 },
+                            height: { xs: 24, sm: 32, md: 40 },
+                            '&:hover': {
+                                backgroundColor: '#fbf1d7',
+                            }
+                        }}
+                    >
+                        <ColorizeIcon sx={{ fontSize: { xs: 16, sm: 20, md: 24 } }}/> 
+                    </IconButton>
+                </Box>
+
+
+                <Modal open={isFontModalOpen} onClose={handleCloseFontModal}>
+                    <Box sx={{ p: 4, backgroundColor: 'white', borderRadius: 1, width: '300px', margin: 'auto', mt: '10%', position: 'relative' }}>
+                        <IconButton onClick={handleCloseFontModal} sx={{ position: 'absolute', top: '10px', right: '10px' }}>
+                            <CloseIcon />
+                        </IconButton>
+                        <Typography variant="h6" gutterBottom>Choose Font</Typography>
+                        <RadioGroup
+                            value={fontFamily}
+                            onChange={handleFontFamilyChange}
+                        >
+                            <FormControlLabel value="Arial" control={<Radio />} label="Arial" />
+                            <FormControlLabel value="Roboto" control={<Radio />} label="Roboto" />
+                            <FormControlLabel value="Courier New" control={<Radio />} label="Courier New" />
+                            <FormControlLabel value="Georgia" control={<Radio />} label="Georgia" />
+                            <FormControlLabel value="Helvetica Neue" control={<Radio />} label="Helvetica Neue" />
+                        </RadioGroup>
+                    </Box>
+                </Modal>
+
                 {/* Edit below is required */}
                 {currentSlide.elements.map((element) => {
                     const commonStyles = {
@@ -265,6 +340,7 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                                 ...commonStyles,
                                 fontSize: `${element.size}em`,
                                 color: element.color,
+                                fontFamily: currentSlide.fontFamily
                             }}
                         >
                             {element.text}
@@ -306,17 +382,8 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                     ) : null;
                 })}
 
-                <IconButton 
-                    onClick={handleOpenPicker}
-                    sx={{ position: 'absolute', top: '10px', right: '10px', backgroundColor: 'white', 
-                        '&:hover': {
-                            backgroundColor: '#fbf1d7',
-                        }
-                    }} >
-                    <ColorizeIcon />
-                </IconButton>
-                <SlideNumber>
-                    <Typography>{currentSlideIndex + 1}</Typography>
+                <SlideNumber sx={{ width: { xs: 24, sm: 32, md: 40 }, height: { xs: 24, sm: 32, md: 40 } }}>
+                    <Typography sx={{ fontSize: { xs: 10, sm: 12, md: 14 } }}>{currentSlideIndex + 1}</Typography>
                 </SlideNumber>
             </SlideBox>
             <BackgroundPicker
