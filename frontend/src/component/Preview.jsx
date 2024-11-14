@@ -5,6 +5,9 @@ import { styled } from '@mui/material/styles';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import axios from 'axios';
+import hljs from 'highlight.js';
+import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 const FullScreenContainer = styled(Box)`
     display: flex;
@@ -12,11 +15,14 @@ const FullScreenContainer = styled(Box)`
     justify-content: center;
     align-items: center;
     width: 100vw;
-    height: 100vh;
+    height: calc(100vh - 55px); /* Adjust the height to account for the top space */
     background-color: #333;
     overflow: hidden;
     opacity: ${(props) => (props.fade ? 0 : 1)};
     transition: opacity 0.5s ease-in-out;
+    margin-top: 55px; /* Add padding to push content below the logout button */
+    box-sizing: border-box;
+    position: relative;
 `;
 
 const SlideNumber = styled(Box)`
@@ -114,7 +120,6 @@ const Preview = ({ token }) => {
                     }}
                 >
                     {/* to modify after 2.3 has been setup */}
-                    {/* <Typography variant="h4" color="white">{currentSlide.elements}</Typography> */}
                     {currentSlide.elements.map((element) => {
                         const commonStyles = {
                             top: `${element.ypos}%`,
@@ -123,6 +128,32 @@ const Preview = ({ token }) => {
                             width: `${element.width}%`,
                             zIndex: element.id,
                         };
+
+                        if (element.type === "code") {
+                            const codingLanguage = hljs.highlightAuto(element.code).language || 'plaintext';
+                            return (
+                                <TextElement
+                                    key={element.id}
+                                    onDoubleClick={() => handleElementEdit(element)}
+                                    onContextMenu={(e) => {
+                                        e.preventDefault();
+                                        handleElementDelete(element);
+                                    }}
+                                    sx={{
+                                        ...commonStyles,
+                                        fontSize: `${element.size}em`,
+                                    }}
+                                >
+                                    <SyntaxHighlighter
+                                        language={codingLanguage}
+                                        style={docco}
+                                        wrapLongLines
+                                    >
+                                        {element.code}
+                                    </SyntaxHighlighter>
+                                </TextElement>
+                            );
+                        }
 
                         return element.type === "text" ? (
                             <TextElement
@@ -171,8 +202,8 @@ const Preview = ({ token }) => {
                                 <iframe
                                     width="100%"
                                     height="100%"
-                                    src={`${element.url}?autoplay=${element.auto ? 1 : 0}`}
-                                    allow='autoplay'
+                                    src={`${element.url}?rel=0&modestbranding=1&mute=1&showinfo=0&controls=0&autoplay=${element.autoplay ? 1 : 0}`}
+                                    allow="autoplay"
                                 />
                             </TextElement>
                         ) : null;
