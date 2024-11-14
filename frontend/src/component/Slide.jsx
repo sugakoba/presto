@@ -8,6 +8,9 @@ import {
     FontDownload as FontDownloadIcon,
     Colorize as ColorizeIcon
 } from '@mui/icons-material';
+import hljs from 'highlight.js';
+import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 const SlideBox = styled(Box)`
     position: relative;
     width: 75%;
@@ -148,7 +151,6 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
     }
 
     const handleElementEdit = (element) => {
-        // TODO need if statement:
         if (element.type === 'text') {
             setTextEditModalOpen(true);
         } else if (element.type === 'image') {
@@ -326,6 +328,32 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                         width: `${element.width}%`,
                         zIndex: element.id,
                     };
+
+                    if (element.type === "code") {
+                        const codingLanguage = hljs.highlightAuto(element.code).language || 'plaintext';
+                        return (
+                            <TextElement
+                                key={element.id}
+                                onDoubleClick={() => handleElementEdit(element)}
+                                onContextMenu={(e) => {
+                                    e.preventDefault();
+                                    handleElementDelete(element);
+                                }}
+                                sx={{
+                                    ...commonStyles,
+                                    fontSize: `${element.size}em`,
+                                }}
+                            >
+                                <SyntaxHighlighter
+                                    language={codingLanguage}
+                                    style={docco}
+                                    wrapLongLines
+                                >
+                                    {element.code}
+                                </SyntaxHighlighter>
+                            </TextElement>
+                        );
+                    }
 
                     return element.type === "text" ? (
                         <TextElement
@@ -550,69 +578,69 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
             </Modal>
 
             <Modal open={isVideoEditModalOpen} onClose={handleCloseVideoModal}>
-                    <AddElementContainer>
-                        <AddElementTitle variant="h5" component="h2">
-                            Edit New Video
-                        </AddElementTitle>
-                        <AddElementInput
-                            required
-                            value={selectedElement?.height || ''}
-                            onChange={(e) => handleElementChange('height', e.target.value)}
-                            label="Edit Video Height"
-                            variant="outlined"
-                            margin="normal"
+                <AddElementContainer>
+                    <AddElementTitle variant="h5" component="h2">
+                        Edit New Video
+                    </AddElementTitle>
+                    <AddElementInput
+                        required
+                        value={selectedElement?.height || ''}
+                        onChange={(e) => handleElementChange('height', e.target.value)}
+                        label="Edit Video Height"
+                        variant="outlined"
+                        margin="normal"
+                    />
+                    <AddElementInput
+                        required
+                        value={selectedElement?.width || ''}
+                        onChange={(e) => handleElementChange('width', e.target.value)}
+                        label="Edit Video Width"
+                        variant="outlined"
+                        margin="normal"
+                    />
+                    <AddElementInput
+                        required
+                        value={selectedElement?.url || ''}
+                        onChange={(e) => handleElementChange('url', e.target.value)}
+                        label="Enter Video URL"
+                        variant="outlined"
+                        margin="normal"
+                    />
+                    <div sx={{ display: 'flex', alignItems: 'center' }}>
+                        Autoplay?
+                        <Checkbox
+                            checked={selectedElement.autoplay}
+                            onChange={(e) => handleElementChange('autoplay', e.target.checked)}
+                            color="primary"
                         />
-                        <AddElementInput
-                            required
-                            value={selectedElement?.width || ''}
-                            onChange={(e) => handleElementChange('width', e.target.value)}
-                            label="Edit Video Width"
-                            variant="outlined"
-                            margin="normal"
-                        />
-                        <AddElementInput
-                            required
-                            value={selectedElement?.url || ''}
-                            onChange={(e) => handleElementChange('url', e.target.value)}
-                            label="Enter Video URL"
-                            variant="outlined"
-                            margin="normal"
-                        />
-                        <div sx={{ display: 'flex', alignItems: 'center' }}>
-                            Autoplay?
-                            <Checkbox
-                                checked={selectedElement.autoplay}
-                                onChange={(e) => handleElementChange('autoplay', e.target.checked)}
-                                color="primary"
-                            />
-                        </div>
-                        <AddElementInput 
-                            required
-                            value={String(selectedElement?.xpos) || ''}
-                            onChange={(e) => handleElementChange('xpos', e.target.value)}
-                            label="Edit X-coordinate"
-                            variant="outlined"
-                            margin="normal"
-                        />
-                        <AddElementInput 
-                            required
-                            value={String(selectedElement?.ypos) || ''}
-                            onChange={(e) => handleElementChange('ypos', e.target.value)}
-                            label="Edit Y-coordinate"
-                            variant="outlined"
-                            margin="normal"
-                        />
-                        <div>
-                            <SaveButton variant="contained" onClick={handleElementSave} startIcon={<CheckIcon />}>
-                                Save
-                            </SaveButton>
-                            <CancelButton variant="outlined" onClick={handleCloseVideoModal} startIcon={<CloseIcon />}>
-                                Cancel
-                            </CancelButton>
-                        </div>
+                    </div>
+                    <AddElementInput 
+                        required
+                        value={String(selectedElement?.xpos) || ''}
+                        onChange={(e) => handleElementChange('xpos', e.target.value)}
+                        label="Edit X-coordinate"
+                        variant="outlined"
+                        margin="normal"
+                    />
+                    <AddElementInput 
+                        required
+                        value={String(selectedElement?.ypos) || ''}
+                        onChange={(e) => handleElementChange('ypos', e.target.value)}
+                        label="Edit Y-coordinate"
+                        variant="outlined"
+                        margin="normal"
+                    />
+                    <div>
+                        <SaveButton variant="contained" onClick={handleElementSave} startIcon={<CheckIcon />}>
+                            Save
+                        </SaveButton>
+                        <CancelButton variant="outlined" onClick={handleCloseVideoModal} startIcon={<CloseIcon />}>
+                            Cancel
+                        </CancelButton>
+                    </div>
                         
-                    </AddElementContainer>
-                </Modal>
+                </AddElementContainer>
+            </Modal>
             </>
     );
 };
