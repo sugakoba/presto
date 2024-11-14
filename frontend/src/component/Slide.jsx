@@ -422,3 +422,198 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
         onBackgroundChange={handleBackgroundChange}
       />
 
+<Modal open={isTextEditModalOpen} onClose={handleCloseTextEdit}>
+        <AddElementContainer>
+          <AddElementTitle variant="h5" component="h2">
+                        Edit this Text
+          </AddElementTitle>
+          <AddElementInput 
+            required
+            value={selectedElement?.height || ''}
+            onChange={(e) => handleElementChange('height', e.target.value)}
+            label="Edit Text Area Height"
+            variant="outlined"
+            margin="normal"
+          />
+          <AddElementInput 
+            required
+            value={selectedElement?.width || ''}
+            onChange={(e) => handleElementChange('width', e.target.value)}
+            label="Edit Text Area Width"
+            variant="outlined"
+            margin="normal"
+          />
+          <AddElementInput 
+            required
+            value={selectedElement?.text || ''}
+            onChange={(e) => handleElementChange('text', e.target.value)}
+            label="Edit New Text Content"
+            variant="outlined"
+            margin="normal"
+          />
+          <AddElementInput 
+            required
+            value={selectedElement?.size || ''}
+            onChange={(e) => handleElementChange('size', e.target.value)}
+            label="Edit New Text Size In em"
+            variant="outlined"
+            margin="normal"
+          />
+          <AddElementInput 
+            required
+            value={selectedElement?.color || ''}
+            onChange={(e) => handleElementChange('color', e.target.value)}
+            label="Edit New Text Color"
+            variant="outlined"
+            margin="normal"
+          />
+          <AddElementInput 
+            required
+            value={String(selectedElement?.xpos) || ''}
+            onChange={(e) => handleElementChange('xpos', e.target.value)}
+            label="Edit X-coordinate"
+            variant="outlined"
+            margin="normal"
+          />
+          <AddElementInput 
+            required
+            value={String(selectedElement?.ypos) || ''}
+            onChange={(e) => handleElementChange('ypos', e.target.value)}
+            label="Edit Y-coordinate"
+            variant="outlined"
+            margin="normal"
+          />
+          <div>
+            <SaveButton variant="contained" onClick={handleElementSave} startIcon={<CheckIcon />}>
+                            Save
+            </SaveButton>
+            <CancelButton variant="outlined" onClick={handleCloseTextEdit} startIcon={<CloseIcon />}>
+                            Cancel
+            </CancelButton>
+          </div>
+                        
+        </AddElementContainer>
+      </Modal>
+
+
+      <Modal open={isImageEditModalOpen} onClose={handleCloseImageEdit}>
+        <AddElementContainer>
+          <AddElementTitle variant="h5" component="h2">
+                        Edit this Image
+          </AddElementTitle>
+          <AddElementInput 
+            required
+            value={selectedElement?.height || ''}
+            onChange={(e) => handleElementChange('height', e.target.value)}
+            label="Edit Image Height"
+            variant="outlined"
+            margin="normal"
+          />
+          <AddElementInput 
+            required
+            value={selectedElement?.width || ''}
+            onChange={(e) => handleElementChange('width', e.target.value)}
+            label="Edit Image Width"
+            variant="outlined"
+            margin="normal"
+          />
+          <div sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <RadioGroup
+              row
+              value={imageInputType}
+              onChange={(e) => setImageInputType(e.target.value)}
+            >
+              <FormControlLabel value="url" control={<Radio />} label="Enter Image URL" />
+              <FormControlLabel value="file" control={<Radio />} label="Upload Image File" />
+            </RadioGroup>
+            {imageInputType === 'url' ? (
+              <AddElementInput
+                onChange={(e) => handleElementChange('url', e.target.value)}
+                label="Enter Image URL"
+                variant="outlined"
+                margin="normal"
+                value={selectedElement?.url || ''}
+              />
+            ) : (
+              <Button variant="outlined" component="label" sx={{ marginTop: 2 }} >
+                                Upload Image File
+                <input type="file" accept="image/*" hidden onChange={handleFileChange}/>
+              </Button>
+            )}
+          </div>
+
+
+          <AddElementInput
+            required
+            onChange={(e) => handleElementChange('description', e.target.value)}
+            label="Enter Alt Description"
+            variant="outlined"
+            margin="normal"
+            value={selectedElement?.description || ''}
+          />
+
+          <AddElementInput 
+            required
+            value={String(selectedElement?.xpos) || ''}
+            onChange={(e) => handleElementChange('xpos', e.target.value)}
+            label="Edit X-coordinate"
+            variant="outlined"
+            margin="normal"
+          />
+          <AddElementInput 
+            required
+            value={String(selectedElement?.ypos) || ''}
+            onChange={(e) => handleElementChange('ypos', e.target.value)}
+            label="Edit Y-coordinate"
+            variant="outlined"
+            margin="normal"
+          />
+          <div>
+            <SaveButton variant="contained" onClick={handleElementSave} startIcon={<CheckIcon />}>
+                            Save
+            </SaveButton>
+            <CancelButton variant="outlined" onClick={handleCloseImageEdit} startIcon={<CloseIcon />}>
+                            Cancel
+            </CancelButton>
+          </div>
+                        
+        </AddElementContainer>
+      </Modal>
+
+      <Modal open={isVideoEditModalOpen} onClose={handleCloseVideoModal}>
+        <AddElementContainer>
+          <AddElementTitle variant="h5" component="h2">
+                        Edit New Video
+          </AddElementTitle>
+          <AddElementInput
+            required
+            value={selectedElement?.height || ''}
+            onChange={(e) => handleElementChange('height', e.target.value)}
+            label="Edit Video Height"
+            variant="outlined"
+            margin="normal"
+          />
+          <AddElementInput
+            required
+            value={selectedElement?.width || ''}
+            onChange={(e) => handleElementChange('width', e.target.value)}
+            label="Edit Video Width"
+            variant="outlined"
+            margin="normal"
+          />
+          <AddElementInput
+            required
+            value={selectedElement?.url || ''}
+            onChange={(e) => handleElementChange('url', e.target.value)}
+            label="Enter Video URL"
+            variant="outlined"
+            margin="normal"
+          />
+          <div sx={{ display: 'flex', alignItems: 'center' }}>
+                        Autoplay?
+            <Checkbox
+              checked={selectedElement.autoplay}
+              onChange={(e) => handleElementChange('autoplay', e.target.checked)}
+              color="primary"
+            />
+          </div>
