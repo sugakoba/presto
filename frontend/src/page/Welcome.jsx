@@ -28,45 +28,45 @@ const WelcomeContainer = styled(Box)`
 function Welcome({ token }) {
 
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const goToRegister = () => {
-        navigate('/register');
-    }
+  const goToRegister = () => {
+    navigate('/register');
+  }
 
-    const goToLogin = () => {
-        navigate('/login');
-    }
+  const goToLogin = () => {
+    navigate('/login');
+  }
 
-    return (
-        <>
-        <BackgroundContainer>
-            <WelcomeContainer>
-                <h2>Welcome To Presto </h2>
+  return (
+    <>
+      <BackgroundContainer>
+        <WelcomeContainer>
+          <h2>Welcome To Presto </h2>
 
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={goToLogin}
-                    sx={{ width: '80%' }}
-                >
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={goToLogin}
+            sx={{ width: '80%' }}
+          >
                     Login
-                </Button>
+          </Button>
 
-                <Button 
-                    variant="contained"
-                    color="primary"
-                    onClick={goToRegister}
-                    sx={{ width: '80%' }}
-                >
+          <Button 
+            variant="contained"
+            color="primary"
+            onClick={goToRegister}
+            sx={{ width: '80%' }}
+          >
                     register
-                </Button>
+          </Button>
 
-            </WelcomeContainer>
-        </BackgroundContainer>
+        </WelcomeContainer>
+      </BackgroundContainer>
 
-        </>
-    )
+    </>
+  )
 }
 
 export default Welcome;
