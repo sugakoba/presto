@@ -465,3 +465,199 @@ function Presentation({ token }) {
     handleCloseVideoModal();
   }
 
+  const handleNewCode = async() => {
+    let elementLength = presentation.slides[currentSlideIndex].elements.length;
+
+    if (elementLength === 0) {
+      elementLength = 1;
+    } else {
+      elementLength = presentation.slides[currentSlideIndex].elements[elementLength - 1].id + 1
+    }
+
+    const newCode = {
+      id: elementLength,
+      type: "code",
+      height: codeHeight,
+      width: codeWidth,
+      size: codeSize,
+      code: code,
+      xpos: 0,
+      ypos: 0
+    }
+
+    const updatedElements = [...presentation.slides[currentSlideIndex].elements, newCode];
+    const updatedSlides = presentation.slides.map((slide, index) =>
+      index === currentSlideIndex
+        ? { ...slide, elements: updatedElements }
+        : slide
+    );
+
+    const updatedPresentation = { ...presentation, slides: updatedSlides };
+
+    setPresentation(updatedPresentation);
+    updatePresentationBackend(updatedPresentation);
+    handleCloseCodeModal();
+  }
+
+  const addNewSlide = async () => {
+    let newId = presentation.slides[presentation.slides.length - 1].id + 1;
+    const idExists = (id) => presentation.slides.some(slide => slide.id === id);
+    while (idExists(newId)) {
+      newId += 1; 
+    }
+
+    const newSlide = {
+      id: newId,
+      backgroundStyle: presentation.defaultStyle,
+      elements: []
+    };
+
+    const updatedSlides = [...presentation.slides, newSlide];
+    const updatedPresentation = { ...presentation, slides: updatedSlides };
+    setPresentation(updatedPresentation);
+    updateSlideIndex(updatedSlides.length - 1);
+    updatePresentationBackend(updatedPresentation);
+  };
+
+  const handleNextSlide = () => {
+    const newIndex = (currentSlideIndex + 1) % presentation.slides.length;
+    handleSlideChange(newIndex);
+  };
+
+  const handlePrevSlide = () => {
+    const newIndex = (currentSlideIndex - 1 + presentation.slides.length) % presentation.slides.length;
+    handleSlideChange(newIndex);
+  };
+
+  const handleThumbnailUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64String = reader.result;
+        const updatePresentations = presentations.map((presentation) =>
+          Number(presentation.id) === Number(presentationId)
+            ? { ...presentation, thumbnail: base64String }
+            : presentation
+        )
+        
+        try {
+          const response = await axios.put('http://localhost:5005/store', 
+            { store: { presentations: updatePresentations } },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`
+              },
+            }
+          );
+          if (response.status === 200) {
+            setPresentation((prevPresentation) => ({
+              ...prevPresentation,
+              thumbnail: base64String, 
+            }));
+            setPresentations(updatePresentations)
+            setErrorMsg('Image successfully uploaded!');
+            setErrorOpen(true);
+          }
+        } catch (error) {
+          setErrorMsg('Failed to save new thumbnail: ', error.response.data.error);
+          setErrorOpen(true);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const deletePresentation = async () => {
+    const afterDeletion = presentations.filter(presentation => Number(presentation.id) !== Number(presentationId));
+    try {
+      const response = await axios.put('http://localhost:5005/store', 
+        { store: { presentations: afterDeletion } },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+        }
+      );
+      if (response.status === 200) {
+        setPresentations(afterDeletion);
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      setErrorMsg('Failed to delete presentation: ', error.response.data.error);
+      setErrorOpen(true); 
+    }
+  };
+
+  const deleteCurrentSlide = () => {
+    if (presentation.slides.length === 1) {
+      setErrorMsg('Cannot delete the only slide!');
+      setErrorOpen(true);
+      return;
+    }
+
+    const updatedSlides = presentation.slides.filter((_, index) => index !== currentSlideIndex);
+    const updatedPresentation = { ...presentation, slides: updatedSlides };
+    setPresentation(updatedPresentation);
+    updateSlideIndex(Math.max(currentSlideIndex - 1, 0));
+    updatePresentationBackend(updatedPresentation);
+  };
+
+  const handleSaveTitle = async () => {
+    setTitle(newTitle);   
+    const updatePresentations = presentations.map((presentation) =>
+      Number(presentation.id) === Number(presentationId)
+        ? { ...presentation, name: newTitle }
+        : presentation
+    )
+    setIsModalOpen(false); 
+              
+    try {
+      const response = await axios.put('http://localhost:5005/store', 
+        { store: { presentations: updatePresentations } },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+        }
+      );
+      if (response.status === 200) {
+        setPresentation((prevPresentation) => ({
+          ...prevPresentation,
+          name: newTitle, 
+        }));
+        setPresentations(updatePresentations)
+      }
+    } catch (error) {
+      setErrorMsg('Failed to save new title: ', error.response.data.error);
+      setErrorOpen(true);
+    }
+  };
+
+  const fetchPresentationInfo = async () => {
+    try {
+      const response = await axios.get('http://localhost:5005/store', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response.status === 200) {
+        const presentationsData = response.data.store.presentations;
+        setPresentations(presentationsData);
+        presentationsData.map(presentation => {
+          if (Number(presentation.id) === Number(presentationId)) {
+            setPresentation(presentation);
+            setTitle(presentation.name);
+          }
+        })
+      }
+    } catch (error) {
+      setErrorMsg(error.response.data.error);
+      setErrorOpen(true);
+    }
+  };
+
+  const toggleRevisionHistory = () => {
+    setIsRevisionHistoryOpen(!isRevisionHistoryOpen);
+  };
+
