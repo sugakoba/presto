@@ -102,7 +102,7 @@ function Login({ token, handleSuccess }) {
                         type="email"
                         value={email}
                         onChange={e => setEmail(e.target.value)}
-                        style={{ width: '80%' }}
+                        sx={{ width: '80%' }}
                     />
 
                     <TextField 
@@ -111,14 +111,14 @@ function Login({ token, handleSuccess }) {
                         type="password"
                         value={password}
                         onChange={e => setPassword(e.target.value)} 
-                        style={{ width: '80%' }}
+                        sx={{ width: '80%' }}
                     />
 
                     <Button 
                         variant="contained"
                         color="primary"
                         onClick={login}
-                        style={{ width: '80%' }}
+                        sx={{ width: '80%' }}
                     >
                         Login
                     </Button>

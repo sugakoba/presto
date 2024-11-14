@@ -132,7 +132,7 @@ const Preview = ({ token }) => {
                                     e.preventDefault();
                                     handleElementDelete(element);
                                 }}
-                                style={{
+                                sx={{
                                     ...commonStyles,
                                     fontSize: `${element.size}em`,
                                     color: element.color,
@@ -149,12 +149,12 @@ const Preview = ({ token }) => {
                                     e.preventDefault();
                                     handleElementDelete(element);
                                 }}
-                                style={commonStyles}
+                                sx={commonStyles}
                             >
                                 <img
                                     src={element.url}
                                     alt={element.description}
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                 />
 
                             </TextElement>
@@ -166,7 +166,7 @@ const Preview = ({ token }) => {
                                     e.preventDefault();
                                     handleElementDelete(element);
                                 }}
-                                style={commonStyles}
+                                sx={commonStyles}
                             >
                                 <iframe
                                     width="100%"

@@ -31,7 +31,7 @@ export default App
 //port: 5005
 
 // TODO: 
-// Autoplay not working. 
+// Autoplay not working. Finish off 2.4.  
 // Overflow when type in more code. 
 // Need to have a functionality of check input. 
 // Need to have usuability of poping up confirm delete element. 

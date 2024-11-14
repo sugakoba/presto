@@ -938,7 +938,7 @@ function Presentation({ token }) {
                             variant="outlined"
                             margin="normal"
                         />
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <div sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <RadioGroup
                                 row
                                 value={imageInputType}
@@ -1008,7 +1008,7 @@ function Presentation({ token }) {
                             variant="outlined"
                             margin="normal"
                         />
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div sx={{ display: 'flex', alignItems: 'center' }}>
                             Autoplay?
                             <Checkbox
                                 checked={videoAuto}

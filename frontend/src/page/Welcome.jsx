@@ -48,7 +48,7 @@ function Welcome({ token }) {
                     variant="contained"
                     color="primary"
                     onClick={goToLogin}
-                    style={{ width: '80%' }}
+                    sx={{ width: '80%' }}
                 >
                     Login
                 </Button>
@@ -57,7 +57,7 @@ function Welcome({ token }) {
                     variant="contained"
                     color="primary"
                     onClick={goToRegister}
-                    style={{ width: '80%' }}
+                    sx={{ width: '80%' }}
                 >
                     register
                 </Button>

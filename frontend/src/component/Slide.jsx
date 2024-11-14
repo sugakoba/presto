@@ -336,7 +336,7 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                                 e.preventDefault();
                                 handleElementDelete(element);
                             }}
-                            style={{
+                            sx={{
                                 ...commonStyles,
                                 fontSize: `${element.size}em`,
                                 color: element.color,
@@ -353,12 +353,12 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                                 e.preventDefault();
                                 handleElementDelete(element);
                             }}
-                            style={commonStyles}
+                            sx={commonStyles}
                         >
                             <img
                                 src={element.url}
                                 alt={element.description}
-                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             />
 
                         </TextElement>
@@ -370,7 +370,7 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                                 e.preventDefault();
                                 handleElementDelete(element);
                             }}
-                            style={commonStyles}
+                            sx={commonStyles}
                         >
                             <iframe
                                 width="100%"
@@ -487,7 +487,7 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                         variant="outlined"
                         margin="normal"
                     />
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <div sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <RadioGroup
                             row
                             value={imageInputType}
@@ -579,7 +579,7 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                             variant="outlined"
                             margin="normal"
                         />
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div sx={{ display: 'flex', alignItems: 'center' }}>
                             Autoplay?
                             <Checkbox
                                 checked={selectedElement.autoplay}

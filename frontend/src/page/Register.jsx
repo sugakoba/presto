@@ -106,7 +106,7 @@ function Register({ token, handleSuccess }) {
                             type="email"
                             value={email}
                             onChange={e => setEmail(e.target.value)}
-                            style={{ width: '80%' }}
+                            sx={{ width: '80%' }}
                     />
 
                     <TextField 
@@ -115,7 +115,7 @@ function Register({ token, handleSuccess }) {
                             type="text"
                             value={name}
                             onChange={e => setName(e.target.value)}
-                            style={{ width: '80%' }}
+                            sx={{ width: '80%' }}
                     />
 
                     <TextField 
@@ -124,7 +124,7 @@ function Register({ token, handleSuccess }) {
                         type="password"
                         value={password}
                         onChange={e => setPassword(e.target.value)} 
-                        style={{ width: '80%' }}
+                        sx={{ width: '80%' }}
                     />
 
                     <TextField 
@@ -133,14 +133,14 @@ function Register({ token, handleSuccess }) {
                         type="password"
                         value={confirmPassword}
                         onChange={e => setConfirmPassword(e.target.value)}
-                        style={{ width: '80%' }}
+                        sx={{ width: '80%' }}
                     />
 
                     <Button 
                         variant="contained"
                         color="primary"
                         onClick={register}
-                        style={{ width: '80%' }}
+                        sx={{ width: '80%' }}
                     >
                         Register
                     </Button>
