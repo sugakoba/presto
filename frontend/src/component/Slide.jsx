@@ -8,7 +8,6 @@ import {
     FontDownload as FontDownloadIcon,
     Colorize as ColorizeIcon
 } from '@mui/icons-material';
-// import YouTube from 'react-youtube';
 const SlideBox = styled(Box)`
     position: relative;
     width: 75%;
@@ -375,8 +374,8 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                             <iframe
                                 width="100%"
                                 height="100%"
-                                src={`${element.url}?autoplay=${element.auto ? 1 : 0}`}
-                                allow='autoplay'
+                                src={`${element.url}?rel=0&modestbranding=1&mute=1&showinfo=0&controls=0&autoplay=${element.autoplay ? 1 : 0}`}
+                                allow="autoplay"
                             />
                         </TextElement>
                     ) : null;
@@ -575,7 +574,7 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                             required
                             value={selectedElement?.url || ''}
                             onChange={(e) => handleElementChange('url', e.target.value)}
-                            label="Enter Video URL (optional)"
+                            label="Enter Video URL"
                             variant="outlined"
                             margin="normal"
                         />
@@ -583,7 +582,7 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                             Autoplay?
                             <Checkbox
                                 checked={selectedElement.autoplay}
-                                onChange={(e) => handleElementChange('autoplay', e.target.value)}
+                                onChange={(e) => handleElementChange('autoplay', e.target.checked)}
                                 color="primary"
                             />
                         </div>
