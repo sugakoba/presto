@@ -10,43 +10,43 @@ import Preview from './component/Preview';
 
 function MainApp() {
 
-    const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(localStorage.getItem('token'));
 
-    const navigate = useNavigate();
-    const location = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    const handleNewToken = (newToken) => {
-        localStorage.setItem('token', newToken);
-        setToken(newToken);
-        navigate('/dashboard');
+  const handleNewToken = (newToken) => {
+    localStorage.setItem('token', newToken);
+    setToken(newToken);
+    navigate('/dashboard');
+  }
+
+  React.useEffect(() => {
+    if (token && ['/login', '/register'].includes(location.pathname)) {
+      navigate('/dashboard');
     }
 
-    React.useEffect(() => {
-        if (token && ['/login', '/register'].includes(location.pathname)) {
-            navigate('/dashboard');
-        }
+    if (!token && !(['/login', '/register']).includes(location.pathname)) {
+      navigate('/welcome')
+    }
+  }, [token, location.pathname]);
 
-        if (!token && !(['/login', '/register']).includes(location.pathname)) {
-            navigate('/welcome')
-        }
-    }, [token, location.pathname]);
-
-    return (
-        <>
-            <Routes>
-                <Route path="/" element={<Welcome token={token} />} />
-                <Route path="/welcome" element={<Welcome/> }/>
-                <Route path="/register" element={<Register token={token} handleSuccess={handleNewToken} />} />
-                <Route path="/login" element={<Login token={token} handleSuccess={handleNewToken}/>} />
-                <Route path="/dashboard" element={<Dashboard token={token}/>}/>
-                <Route path="/dashboard/:presentationId/:slideNumber?" element={<Presentation token={token}/>} />
-                <Route path="/dashboard/:presentationId/preview/:slideNumber?" element={<Preview token={token}/>} />
-            </Routes>
-            {token && (
-                <LogoutButton token={token} setToken={setToken} />
-            )}
-        </>
-    )
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<Welcome token={token} />} />
+        <Route path="/welcome" element={<Welcome/> }/>
+        <Route path="/register" element={<Register token={token} handleSuccess={handleNewToken} />} />
+        <Route path="/login" element={<Login token={token} handleSuccess={handleNewToken}/>} />
+        <Route path="/dashboard" element={<Dashboard token={token}/>}/>
+        <Route path="/dashboard/:presentationId/:slideNumber?" element={<Presentation token={token}/>} />
+        <Route path="/dashboard/:presentationId/preview/:slideNumber?" element={<Preview token={token}/>} />
+      </Routes>
+      {token && (
+        <LogoutButton token={token} setToken={setToken} />
+      )}
+    </>
+  )
 
 }
 
