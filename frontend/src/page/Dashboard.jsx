@@ -72,15 +72,15 @@ const CreateTitle = styled(Typography)`
 `;
 
 const CreateName = styled(TextField)({
-    width: '213px',
-    '& .MuiOutlinedInput-root': {
-        '&.Mui-focused fieldset': {
-            borderColor: '#C46243', 
-        },
+  width: '213px',
+  '& .MuiOutlinedInput-root': {
+    '&.Mui-focused fieldset': {
+      borderColor: '#C46243', 
     },
-    '& .MuiInputLabel-root.Mui-focused': {
-        color: '#C46243', 
-    },
+  },
+  '& .MuiInputLabel-root.Mui-focused': {
+    color: '#C46243', 
+  },
 });
 
 const PresentationCard = styled(Card)`
@@ -107,229 +107,229 @@ const Thumbnail = styled(Box)`
 `;
 
 function Dashboard({ token }) {
-    const [presentations, setPresentations] = useState([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newPresentationName, setNewPresentationName] = useState('');
-    const [newDescription, setNewDescription] = useState('');
-    const [newThumbnail, setNewThumbnail] = useState('');
-    const inputRef = useRef(null);
-    const [errorMsg, setErrorMsg] = useState('');
-    const [isErrorOpen, setErrorOpen] = useState(false);
+  const [presentations, setPresentations] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newPresentationName, setNewPresentationName] = useState('');
+  const [newDescription, setNewDescription] = useState('');
+  const [newThumbnail, setNewThumbnail] = useState('');
+  const inputRef = useRef(null);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [isErrorOpen, setErrorOpen] = useState(false);
 
-    const navigate = useNavigate();
-    const handlePresentationClick = (presentationId) => {
-        // automatically navigate to the 1st slide when opening a presentation
-        navigate(`/dashboard/${presentationId}/1`);
-    };
+  const navigate = useNavigate();
+  const handlePresentationClick = (presentationId) => {
+    // automatically navigate to the 1st slide when opening a presentation
+    navigate(`/dashboard/${presentationId}/1`);
+  };
 
-    const fetchPresentations = async () => {
-        try {
-            const response = await axios.get('http://localhost:5005/store', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            if (response.status === 200) {
-                const presentationsData = response.data.store.presentations;
-                const presentationsArray = Array.isArray(presentationsData) ? presentationsData : [];
-                setPresentations(presentationsArray);
-            }
-        } catch (error) {
-            setErrorMsg(error.response.data.error);
-            setErrorOpen(true);
+  const fetchPresentations = async () => {
+    try {
+      const response = await axios.get('http://localhost:5005/store', {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-    };
-
-    const handleOpenModal = () => {
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setNewPresentationName('');
-        setNewDescription('');
-        setNewThumbnail('');
-    };
-
-    const handleCloseError = () => {
-        setErrorOpen(false);
+      });
+      if (response.status === 200) {
+        const presentationsData = response.data.store.presentations;
+        const presentationsArray = Array.isArray(presentationsData) ? presentationsData : [];
+        setPresentations(presentationsArray);
+      }
+    } catch (error) {
+      setErrorMsg(error.response.data.error);
+      setErrorOpen(true);
     }
+  };
 
-    const handleThumbnailUpload = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setNewPresentationName('');
+    setNewDescription('');
+    setNewThumbnail('');
+  };
+
+  const handleCloseError = () => {
+    setErrorOpen(false);
+  }
+
+  const handleThumbnailUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
             
-            reader.onloadend = () => {
-                const base64String = reader.result; 
-                setNewThumbnail(base64String); 
-            };
+      reader.onloadend = () => {
+        const base64String = reader.result; 
+        setNewThumbnail(base64String); 
+      };
             
-            reader.readAsDataURL(file); 
-        }
-    };
+      reader.readAsDataURL(file); 
+    }
+  };
 
-    const isEmptyPresentation = (presentation) =>
-        !presentation || Object.keys(presentation).length === 0;    
+  const isEmptyPresentation = (presentation) =>
+    !presentation || Object.keys(presentation).length === 0;    
 
-    const shouldShowEmptyMessage = presentations.length === 0 || 
+  const shouldShowEmptyMessage = presentations.length === 0 || 
         (presentations.length === 1 && isEmptyPresentation(presentations[0]));
 
-    const handleCreatePresentation = async () => {
-        let newId = 1;
-        if (presentations.length > 0) {
-            newId = presentations[presentations.length - 1].id + 1;
-        }
-        if (newPresentationName.trim() !== '') {
-            /*********************************
+  const handleCreatePresentation = async () => {
+    let newId = 1;
+    if (presentations.length > 0) {
+      newId = presentations[presentations.length - 1].id + 1;
+    }
+    if (newPresentationName.trim() !== '') {
+      /*********************************
              * Automatically creates 1 slide *
             **** Change Slide layout here ****
             **********************************/
-            const newPresentation = {
-                id: newId,
-                description: newDescription,
-                name: newPresentationName,
-                defaultStyle: "white",
-                slides: [{
-                    "id": 1,
-                    "backgroundStyle": "white",
-                    "elements": []
-                }],
-                thumbnail: newThumbnail
-            };
+      const newPresentation = {
+        id: newId,
+        description: newDescription,
+        name: newPresentationName,
+        defaultStyle: "white",
+        slides: [{
+          "id": 1,
+          "backgroundStyle": "white",
+          "elements": []
+        }],
+        thumbnail: newThumbnail
+      };
 
-            try {
-                await fetchPresentations();
-                let updatedPresentations = [newPresentation];
-                if (presentations.length > 0) {
-                    updatedPresentations = [...presentations, newPresentation];
-                } 
-                const response = await axios.put('http://localhost:5005/store', 
-                    { store: { presentations: updatedPresentations } },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        },
-                    }
-                );
-                if (response.status === 200) {
-                    setPresentations(updatedPresentations);
-                    handleCloseModal();
-                } else {
-                    setErrorMsg('Failed to store presentation');
-                    setErrorOpen(true);
-                }
-            } catch (error) {
-                setErrorMsg(error.response.data.error);
-                setErrorOpen(true);
-            } 
+      try {
+        await fetchPresentations();
+        let updatedPresentations = [newPresentation];
+        if (presentations.length > 0) {
+          updatedPresentations = [...presentations, newPresentation];
+        } 
+        const response = await axios.put('http://localhost:5005/store', 
+          { store: { presentations: updatedPresentations } },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            },
+          }
+        );
+        if (response.status === 200) {
+          setPresentations(updatedPresentations);
+          handleCloseModal();
+        } else {
+          setErrorMsg('Failed to store presentation');
+          setErrorOpen(true);
         }
-    };
+      } catch (error) {
+        setErrorMsg(error.response.data.error);
+        setErrorOpen(true);
+      } 
+    }
+  };
 
-    useEffect(() => {
-        fetchPresentations();
-    }, []);
+  useEffect(() => {
+    fetchPresentations();
+  }, []);
 
-    useEffect(() => {
-        if (isModalOpen && inputRef.current) {
-            inputRef.current.focus();
-        }
-    }, [isModalOpen]);
+  useEffect(() => {
+    if (isModalOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isModalOpen]);
 
-    return (
-        <>
-            <DashboardContainer>
-                <ContentArea>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="h4" sx={{ mb: 2, fontSize: { xs: '1.6rem' } }}>
+  return (
+    <>
+      <DashboardContainer>
+        <ContentArea>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Typography variant="h4" sx={{ mb: 2, fontSize: { xs: '1.6rem' } }}>
                             Presentations
-                        </Typography>
-                        <CreateButton variant="contained" onClick={handleOpenModal} startIcon={<AddIcon />} sx={{ mb: 2, ml: 2 }}>
+            </Typography>
+            <CreateButton variant="contained" onClick={handleOpenModal} startIcon={<AddIcon />} sx={{ mb: 2, ml: 2 }}>
                             New Presentation
-                        </CreateButton>
-                    </Box>
+            </CreateButton>
+          </Box>
 
-                    {shouldShowEmptyMessage ? (
-                        <Typography variant="body1" color="textSecondary">
+          {shouldShowEmptyMessage ? (
+            <Typography variant="body1" color="textSecondary">
                             No presentations available. Create a new one!
-                        </Typography>
+            </Typography>
+          ) : (
+            <Grid container spacing={2}>
+              {presentations.map((presentation) => (
+                <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4 }} key={presentation.id}>
+                  <PresentationCard onClick={() => handlePresentationClick(presentation.id)}>
+                    {presentation.thumbnail ? (
+                      <CardMedia
+                        component="img"
+                        sx={{ maxHeight: 100, width: 'auto', height: '50%', margin: '7px' }}
+                        image={presentation.thumbnail}
+                        alt={presentation.name}
+                      />
                     ) : (
-                        <Grid container spacing={2}>
-                            {presentations.map((presentation) => (
-                                <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4 }} key={presentation.id}>
-                                    <PresentationCard onClick={() => handlePresentationClick(presentation.id)}>
-                                        {presentation.thumbnail ? (
-                                            <CardMedia
-                                                component="img"
-                                                sx={{ maxHeight: 100, width: 'auto', height: '50%', margin: '7px' }}
-                                                image={presentation.thumbnail}
-                                                alt={presentation.name}
-                                            />
-                                        ) : (
-                                            <Thumbnail /> 
-                                        )}
-                                        <Typography variant="h6">{presentation.name}</Typography>
-                                        <Typography variant="body2" sx={{ color: 'gray', fontSize: '0.8rem' }}>
-                                            {presentation.description}
-                                        </Typography>
-                                        <Typography variant="body2" sx={{ fontSize: '0.7rem' }}>
-                                            Slides: {presentation.slides.length}
-                                        </Typography>
-                                    </PresentationCard>
-                                </Grid>
-                            ))}
-                        </Grid>
+                      <Thumbnail /> 
                     )}
-                </ContentArea>
+                    <Typography variant="h6">{presentation.name}</Typography>
+                    <Typography variant="body2" sx={{ color: 'gray', fontSize: '0.8rem' }}>
+                      {presentation.description}
+                    </Typography>
+                    <Typography variant="body2" sx={{ fontSize: '0.7rem' }}>
+                                            Slides: {presentation.slides.length}
+                    </Typography>
+                  </PresentationCard>
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </ContentArea>
 
-                <Modal open={isModalOpen} onClose={handleCloseModal}>
-                    <CreateModalContainer>
-                        <CreateTitle variant="h5" component="h2">
+        <Modal open={isModalOpen} onClose={handleCloseModal}>
+          <CreateModalContainer>
+            <CreateTitle variant="h5" component="h2">
                             New Presentation
-                        </CreateTitle>
-                        <CreateName
-                            required
-                            inputRef={inputRef} 
-                            value={newPresentationName}
-                            onChange={(e) => setNewPresentationName(e.target.value)}
-                            label="Enter name"
-                            variant="outlined"
-                            sx={{ mb: 1 }}
-                        />
-                        <CreateName
-                            inputRef={inputRef} 
-                            value={newDescription}
-                            onChange={(e) => setNewDescription(e.target.value)}
-                            label="Enter description"
-                            variant="outlined"
-                            sx={{ mb: 1 }}
-                        />
-                        <CancelButton variant="outlined" component="label" startIcon={<PanoramaIcon />} sx={{ mb: 0.5 }}>
+            </CreateTitle>
+            <CreateName
+              required
+              inputRef={inputRef} 
+              value={newPresentationName}
+              onChange={(e) => setNewPresentationName(e.target.value)}
+              label="Enter name"
+              variant="outlined"
+              sx={{ mb: 1 }}
+            />
+            <CreateName
+              inputRef={inputRef} 
+              value={newDescription}
+              onChange={(e) => setNewDescription(e.target.value)}
+              label="Enter description"
+              variant="outlined"
+              sx={{ mb: 1 }}
+            />
+            <CancelButton variant="outlined" component="label" startIcon={<PanoramaIcon />} sx={{ mb: 0.5 }}>
                             Choose Thumbnail
-                            <input
-                                type="file"
-                                hidden
-                                accept="image/*"
-                                onChange={handleThumbnailUpload}
-                            />
-                        </CancelButton>
-                        {newThumbnail && <Typography variant="caption" ml={1}>Image uploaded</Typography>}
-                        <Box sx={{ mt: 1 }}>
-                            <CreateButton variant="contained" onClick={handleCreatePresentation} startIcon={<AddIcon />}>
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handleThumbnailUpload}
+              />
+            </CancelButton>
+            {newThumbnail && <Typography variant="caption" ml={1}>Image uploaded</Typography>}
+            <Box sx={{ mt: 1 }}>
+              <CreateButton variant="contained" onClick={handleCreatePresentation} startIcon={<AddIcon />}>
                                 Create
-                            </CreateButton>
-                            <CancelButton variant="outlined" onClick={handleCloseModal} startIcon={<CloseIcon />}>
+              </CreateButton>
+              <CancelButton variant="outlined" onClick={handleCloseModal} startIcon={<CloseIcon />}>
                                 Cancel
-                            </CancelButton>
-                        </Box>
-                    </CreateModalContainer>
-                </Modal>
-            </DashboardContainer>
+              </CancelButton>
+            </Box>
+          </CreateModalContainer>
+        </Modal>
+      </DashboardContainer>
 
-            <ErrorPopUp isOpen={isErrorOpen} onClose={handleCloseError} message = {errorMsg}>
-            </ErrorPopUp>
-        </>
-    );
+      <ErrorPopUp isOpen={isErrorOpen} onClose={handleCloseError} message = {errorMsg}>
+      </ErrorPopUp>
+    </>
+  );
 }
 
 export default Dashboard;
