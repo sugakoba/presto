@@ -982,3 +982,122 @@ function Presentation({ token }) {
           </AddElementContainer>
         </Modal>
 
+        <Modal open={isVideoModalOpen} onClose={handleCloseVideoModal}>
+          <AddElementContainer>
+            <AddElementTitle variant="h5" component="h2">
+                            Add New Video
+            </AddElementTitle>
+            <AddElementInput
+              required
+              onChange={(e) => setVideoHeight(e.target.value)}
+              label="Enter Video Height"
+              variant="outlined"
+              margin="normal"
+            />
+            <AddElementInput
+              required
+              onChange={(e) => setVideoWidth(e.target.value)}
+              label="Enter Video Width"
+              variant="outlined"
+              margin="normal"
+            />
+            <AddElementInput
+              required
+              onChange={(e) => setVideoURL(e.target.value)}
+              label="Enter Video URL"
+              variant="outlined"
+              margin="normal"
+            />
+            <div sx={{ display: 'flex', alignItems: 'center' }}>
+                            Autoplay?
+              <Checkbox
+                checked={videoAuto}
+                onChange={(e) => setVideoAuto(e.target.checked)}
+                color="primary"
+              />
+            </div>
+            <div>
+              <SaveButton variant="contained" onClick={handleNewVideo} startIcon={<CheckIcon />}>
+                                Save
+              </SaveButton>
+              <CancelButton variant="outlined" onClick={handleCloseVideoModal} startIcon={<CloseIcon />}>
+                                Cancel
+              </CancelButton>
+            </div>
+                        
+          </AddElementContainer>
+        </Modal>
+
+
+        <Modal open={isCodeModalOpen} onClose={handleCloseCodeModal}>
+          <AddElementContainer>
+            <AddElementTitle variant="h5" component="h2">
+                            Add New Code Block
+            </AddElementTitle>
+            <AddElementInput
+              required
+              onChange={(e) => setCodeHeight(e.target.value)}
+              label="Enter Code Block Height"
+              variant="outlined"
+              margin="normal"
+            />
+            <AddElementInput
+              required
+              onChange={(e) => setCodeWidth(e.target.value)}
+              label="Enter Code Block Width"
+              variant="outlined"
+              margin="normal"
+            />
+
+            <AddElementInput 
+              required
+              onChange={(e) => setCodeSize(e.target.value)}
+              label="Enter New Code Size in em"
+              variant="outlined"
+              margin="normal"
+            />
+
+            <AddElementInput
+              required
+              onChange={(e) => setCode(e.target.value)}
+              label="Enter New Code Block"
+              variant="outlined"
+              margin="normal"
+              multiline
+              minRows={4}
+              fullWidth
+              sx={{
+                overflow: "auto",
+              }}
+
+            />
+
+            <div>
+              <SaveButton variant="contained" onClick={handleNewCode} startIcon={<CheckIcon />}>
+                                Save
+              </SaveButton>
+              <CancelButton variant="outlined" onClick={handleCloseCodeModal} startIcon={<CloseIcon />}>
+                                Cancel
+              </CancelButton>
+            </div>
+                        
+          </AddElementContainer>
+        </Modal>
+
+
+        <Box sx={{ display: 'flex', height: 'calc(100vh - 120px)', position: 'relative' }}>
+          <SlideListContainer>
+            <List sx={{ padding: '0px' }}>
+              {presentation.slides && presentation.slides.map((slide, index) => (
+                <SlideCard
+                  key={slide.id}
+                  className={index === currentSlideIndex ? 'Mui-selected' : ''}
+                  onClick={() => updateSlideIndex(index)}
+                >
+                  <CardContent>
+                    <Typography variant="subtitle1">{index + 1}</Typography>
+                  </CardContent>
+                </SlideCard>
+              ))}
+            </List>
+          </SlideListContainer>
