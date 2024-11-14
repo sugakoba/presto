@@ -35,19 +35,19 @@ const CloseButton = styled.button`
 `;
 
 const ErrorPopUp = ({ isOpen, onClose, message}) => {
-    if (!isOpen) return null;
+  if (!isOpen) return null;
 
-    return (
-        <>
-            <ErrorWindow onClick={onClose}>
-                <ErrorContent onClick={(e) => e.stopPropagation()}>
-                    <CloseButton onClick={onClose}>X</CloseButton>
-                    {message}
-                </ErrorContent>
-            </ErrorWindow>
+  return (
+    <>
+      <ErrorWindow onClick={onClose}>
+        <ErrorContent onClick={(e) => e.stopPropagation()}>
+          <CloseButton onClick={onClose}>X</CloseButton>
+          {message}
+        </ErrorContent>
+      </ErrorWindow>
         
-        </>
-    );
+    </>
+  );
 }
 
 export default ErrorPopUp;
