@@ -41,98 +41,98 @@ const BackButton = styled(Button) `
 
 
 function Login({ token, handleSuccess }) {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isErrorOpen, setErrorOpen] = useState(false);
-    const[errorMsg, setErrorMsg] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isErrorOpen, setErrorOpen] = useState(false);
+  const[errorMsg, setErrorMsg] = useState('');
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const login = () => {
-        if (!email || !password) {
-            setErrorMsg("Email and password can't be empty.");
-            setErrorOpen(true);
-            return;
-        }
-
-        axios.post('http://localhost:5005/admin/auth/login', {
-            email: email,
-            password: password,
-        })
-        .then(function (response) {
-            handleSuccess(response.data.token);
-        }) 
-        .catch(function (error) {
-            setErrorMsg(error.response.data.error);
-            setErrorOpen(true);
-        });
+  const login = () => {
+    if (!email || !password) {
+      setErrorMsg("Email and password can't be empty.");
+      setErrorOpen(true);
+      return;
     }
 
-    const enterKey = (event) => {
-        if (event.key === 'Enter') {
-            login();
-        }
+    axios.post('http://localhost:5005/admin/auth/login', {
+      email: email,
+      password: password,
+    })
+      .then((response) => {
+        handleSuccess(response.data.token);
+      }) 
+      .catch((error) => {
+        setErrorMsg(error.response.data.error);
+        setErrorOpen(true);
+      });
+  }
+
+  const enterKey = (event) => {
+    if (event.key === 'Enter') {
+      login();
     }
+  }
 
-    const handleCloseError = () => {
-        setErrorOpen(false);
+  const handleCloseError = () => {
+    setErrorOpen(false);
+  }
+
+  useEffect(() => {
+    window.addEventListener('keydown', enterKey);
+
+    return () => {
+      window.removeEventListener('keydown', enterKey);
     }
-
-    useEffect(() => {
-        window.addEventListener('keydown', enterKey);
-
-        return () => {
-            window.removeEventListener('keydown', enterKey);
-        }
-    }, [email, password]);
+  }, [email, password]);
 
 
-    return (
-        <>
-            <BackgroundContainer>
-                <LoginContainer>
+  return (
+    <>
+      <BackgroundContainer>
+        <LoginContainer>
 
-                    <Typography variant="h4" component="h1" align="center">
+          <Typography variant="h4" component="h1" align="center">
                         Login
-                    </Typography>
+          </Typography>
 
-                    <TextField 
-                        label="Email"
-                        variant="outlined"
-                        type="email"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                        sx={{ width: '80%' }}
-                    />
+          <TextField 
+            label="Email"
+            variant="outlined"
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            sx={{ width: '80%' }}
+          />
 
-                    <TextField 
-                        label="Password"
-                        variant="outlined"
-                        type="password"
-                        value={password}
-                        onChange={e => setPassword(e.target.value)} 
-                        sx={{ width: '80%' }}
-                    />
+          <TextField 
+            label="Password"
+            variant="outlined"
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)} 
+            sx={{ width: '80%' }}
+          />
 
-                    <Button 
-                        variant="contained"
-                        color="primary"
-                        onClick={login}
-                        sx={{ width: '80%' }}
-                    >
+          <Button 
+            variant="contained"
+            color="primary"
+            onClick={login}
+            sx={{ width: '80%' }}
+          >
                         Login
-                    </Button>
+          </Button>
 
-                    <BackButton onClick={() => navigate('/welcome')}>Back</BackButton>
-                </LoginContainer>
+          <BackButton onClick={() => navigate('/welcome')}>Back</BackButton>
+        </LoginContainer>
 
-            </BackgroundContainer>
+      </BackgroundContainer>
 
-            <ErrorPopUp isOpen={isErrorOpen} onClose={handleCloseError} message = {errorMsg}>
-            </ErrorPopUp>
+      <ErrorPopUp isOpen={isErrorOpen} onClose={handleCloseError} message = {errorMsg}>
+      </ErrorPopUp>
 
-        </>
-    )
+    </>
+  )
 }
 
 export default Login;
