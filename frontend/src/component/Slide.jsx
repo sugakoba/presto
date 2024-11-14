@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Box, Typography, IconButton, Modal, TextField, Button, Radio, RadioGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import BackgroundPicker from './BackgroundPicker';
@@ -264,6 +264,25 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
         setPresentation(updatedPresentation);
     };
 
+    const handleStop = (data) => {
+        if (slideRef.current) {
+            const parentWidth = slideRef.current.offsetWidth;
+            const parentHeight = slideRef.current.offsetHeight;
+            const relativeX = (data.x / parentWidth) * 100;
+            const relativeY = (data.y / parentHeight) * 100;
+
+            setSelectedElement((prev) => ({
+                ...prev,
+                xpos: relativeX,
+                ypos: relativeY,
+            }));
+        }
+    };
+
+    useEffect(() => {
+        handleElementSave();
+    }, [selectedElement]); 
+
     return (
         <>
             <SlideBox 
@@ -341,30 +360,10 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                             <Draggable
                                 axis="both"
                                 bounds="parent"
-                                position={{
+                                onStop={(e, data) => handleStop(data)}
+                                defaultPosition={{
                                     x: slideRef.current ? (element.xpos / 100) * slideRef.current.offsetWidth : 0,
                                     y: slideRef.current ? (element.ypos / 100) * slideRef.current.offsetHeight : 0,
-                                }}
-                                onStop={(e, data) => {
-
-                                    if(slideRef.current) {
-                                        const parentWidth = slideRef.current.offsetWidth;
-                                        const parentHeight = slideRef.current.offsetHeight;
-                                        
-                                        let relativeX = (data.x / parentWidth) * 100;
-                                        let relativeY = (data.y / parentHeight) * 100;
-                                        
-                                        relativeX = relativeX + element.xpos;
-                                        relativeY = relativeY + element.ypos;
-    
-                                        console.log(relativeX, relativeY);
-                            
-                                        handleElementChange('xpos', relativeX);
-                                        handleElementChange('ypos', relativeY);
-                                        handleElementSave();
-                                    }
-                                    
-
                                 }}
                             >
                                 <TextElement
