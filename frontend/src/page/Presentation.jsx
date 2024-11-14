@@ -1101,3 +1101,99 @@ function Presentation({ token }) {
               ))}
             </List>
           </SlideListContainer>
+          <SlideContainer>
+            {presentation.slides ? (
+              <Box sx={{ display: 'flex', margin: '10px' }}>
+                <IconButton aria-label="delete" onClick={deleteCurrentSlide} sx={{ marginRight: 'auto' }}>
+                  <DeleteIcon />
+                </IconButton>
+                {/* Section 3: Edit here */}
+                <Box display="flex" alignItems="center">
+                  <SaveButton
+                    onClick={handleToolExpand}
+                    variant="contained"
+                    startIcon={toolExpand ? <ArrowForwardIcon /> : <ArrowBackIcon />}
+                    sx={{ marginRight: 1 }}
+                    size="small"
+                  >
+                    {toolExpand ? 'Hide' : 'Tool'}
+                  </SaveButton>
+
+                  {toolExpand && (
+                    <Box display ="flex" gap={0}> 
+                      <IconButton aria-label="textInput" onClick={handleOpenTextModal} sx={{ marginRight: 'auto' }}>
+                        <TextIcon />
+                      </IconButton>
+
+                      <IconButton aria-label="imageInput" onClick={handleOpenImageModal} sx={{ marginRight: 'auto' }}>
+                        <ImageIcon />
+                      </IconButton>
+
+                      <IconButton aria-label="videoInput" onClick={handleOpenVideoModal} sx={{ marginRight: 'auto' }}>
+                        <VideoIcon />
+                      </IconButton>
+
+                      <IconButton aria-label="codeInput" onClick={handleOpenCodeModal} sx={{ marginRight: 'auto' }}>
+                        <CodeIcon />
+                      </IconButton>
+                    </Box>
+                  )}
+                </Box>
+                {/* End here */}
+              </Box>
+            ) : (
+              <Typography variant="body1" sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                                Loading slides...
+              </Typography>
+            )}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignContent: 'center', width: '100%' }}>   
+              {presentation.slides && presentation.slides.length >= 2 && (
+                <IconButton onClick={handlePrevSlide} disabled={currentSlideIndex === 0}>
+                  <KeyboardArrowLeftIcon />
+                </IconButton>
+              )}
+              {presentation.slides && (
+                <Slide 
+                  fade={fade}
+                  currentSlideIndex={currentSlideIndex} 
+                  slides={presentation.slides} 
+                  presentation={presentation}
+                  updatePresentationBackend={updatePresentationBackend}
+                  setPresentation={setPresentation} />
+              )}
+              {presentation.slides && presentation.slides.length >= 2 && (
+                <IconButton
+                  onClick={handleNextSlide}
+                  disabled={presentation.slides && currentSlideIndex === presentation.slides.length - 1}
+                >
+                  <KeyboardArrowRightIcon />
+                </IconButton>
+              )}
+            </Box>
+
+            <AddSlideButton aria-label="add" onClick={addNewSlide}>
+              <AddIcon sx={{ color: 'white' }}/>
+            </AddSlideButton>
+          </SlideContainer>
+        </Box>
+        <Rearrange 
+          open={isRearrangeOpen} 
+          onClose={toggleRearrangeScreen} 
+          slides={presentation.slides} 
+          onRearrange={handleRearrange}
+        />
+        <RevisionHistory 
+          open={isRevisionHistoryOpen} 
+          onClose={toggleRevisionHistory} 
+          history={revisionHistory}
+          onRestore={handleRestore}
+        />
+
+        <ErrorPopUp isOpen={isErrorOpen} onClose={handleCloseError} message = {errorMsg}>
+        </ErrorPopUp>
+      </PresentationContainer>
+    </>
+  );
+}
+
+export default Presentation;
