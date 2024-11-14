@@ -226,10 +226,12 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
     const handleBackgroundChange = (style, isDefault) => {
         setBackgroundStyle(style);
         if (isDefault) {
-            const updatedSlides = slides.map((slide) => ({
-                ...slide,
-                backgroundStyle: style,
-            }));
+            const updatedSlides = slides.map((slide) =>
+                // only change slides with the default style, as slides with customs styles always overrides default
+                slide.backgroundStyle === presentation.defaultStyle
+                    ? { ...slide, backgroundStyle: style }
+                    : slide
+            );
             const updatedPresentation = { ...presentation, defaultStyle: style, slides: updatedSlides };
             updatePresentationBackend(updatedPresentation);
             setPresentation(updatedPresentation);

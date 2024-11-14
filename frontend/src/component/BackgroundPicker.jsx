@@ -52,6 +52,7 @@ const BackgroundPicker = ({ isOpen, onClose, onBackgroundChange }) => {
     useEffect(() => {
         if (isOpen) {
             setImageFile(null); 
+            setIsDefault(false);
         }
     }, [isOpen]);
 
