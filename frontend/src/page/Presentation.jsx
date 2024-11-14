@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Box, Button, Typography, Modal, TextField, IconButton, List, Card, CardContent, Fab, Drawer, ListItemButton, ListItemIcon, ListItemText, Checkbox, RadioGroup, FormControlLabel, Radio } from '@mui/material';
@@ -937,7 +937,7 @@ function Presentation({ token }) {
               variant="outlined"
               margin="normal"
             />
-            <div sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <RadioGroup
                 row
                 value={imageInputType}
@@ -959,7 +959,7 @@ function Presentation({ token }) {
                   <input type="file" accept="image/*" hidden onChange={handleFileChange} />
                 </Button>
               )}
-            </div>
+            </Box>
 
 
             <AddElementInput
@@ -1007,14 +1007,14 @@ function Presentation({ token }) {
               variant="outlined"
               margin="normal"
             />
-            <div sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             Autoplay?
               <Checkbox
                 checked={videoAuto}
                 onChange={(e) => setVideoAuto(e.target.checked)}
                 color="primary"
               />
-            </div>
+            </Box>
             <div>
               <SaveButton variant="contained" onClick={handleNewVideo} startIcon={<CheckIcon />}>
                                 Save

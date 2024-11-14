@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Box, Typography, IconButton, Modal, TextField, Button, Radio, RadioGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import BackgroundPicker from './BackgroundPicker';
@@ -107,7 +107,6 @@ const CancelButton = styled(Button)`
 const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentationBackend, setPresentation }) => {
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const currentSlide = slides[currentSlideIndex];
-  const [backgroundStyle, setBackgroundStyle] = useState(currentSlide?.backgroundStyle || 'white');
   const [isTextEditModalOpen, setTextEditModalOpen] = useState(false);
   const [isFontModalOpen, setIsFontModalOpen] = useState(false);
   const [fontFamily, setFontFamily] = useState('Arial');
@@ -224,7 +223,6 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
   }
 
   const handleBackgroundChange = (style, isDefault) => {
-    setBackgroundStyle(style);
     if (isDefault) {
       const updatedSlides = slides.map((slide) =>
       // only change slides with the default style, as slides with customs styles always overrides default
@@ -385,7 +383,8 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
               }}
               sx={commonStyles}
             >
-              <img
+              <Box
+                component="img"
                 src={element.url}
                 alt={element.description}
                 sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -517,7 +516,7 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
             variant="outlined"
             margin="normal"
           />
-          <div sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <RadioGroup
               row
               value={imageInputType}
@@ -540,7 +539,7 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                 <input type="file" accept="image/*" hidden onChange={handleFileChange}/>
               </Button>
             )}
-          </div>
+          </Box>
 
 
           <AddElementInput
@@ -609,14 +608,14 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
             variant="outlined"
             margin="normal"
           />
-          <div sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         Autoplay?
             <Checkbox
               checked={selectedElement.autoplay}
               onChange={(e) => handleElementChange('autoplay', e.target.checked)}
               color="primary"
             />
-          </div>
+          </Box>
           <AddElementInput 
             required
             value={String(selectedElement?.xpos) || ''}

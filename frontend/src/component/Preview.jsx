@@ -8,6 +8,7 @@ import axios from 'axios';
 import hljs from 'highlight.js';
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import ErrorPopUp from "../component/ErrorPopUp";
 
 const FullScreenContainer = styled(Box)`
     display: flex;
@@ -59,6 +60,9 @@ const Preview = ({ token }) => {
   const currentSlide = slides[currentSlideIndex];
   const navigate = useNavigate();
 
+  const [isErrorOpen, setErrorOpen] = useState(false);
+  const[errorMsg, setErrorMsg] = useState('');
+
   const fetchSlides = async () => {
     try {
       const response = await axios.get('http://localhost:5005/store', {
@@ -85,7 +89,7 @@ const Preview = ({ token }) => {
     setTimeout(() => {
       setCurrentSlideIndex(newIndex); 
       setFade(false); 
-      navigate(`/dashboard/${presentationId}/preview/${index + 1}`, { replace: true });
+      navigate(`/dashboard/${presentationId}/preview/${newIndex + 1}`, { replace: true });
     }, 500); 
   };
 
@@ -99,6 +103,10 @@ const Preview = ({ token }) => {
     const newIndex = currentSlideIndex > 0 ? currentSlideIndex - 1 : slides.length - 1;
     handleSlideChange(newIndex);
   };    
+
+  const handleCloseError = () => {
+    setErrorOpen(false);
+  }
 
   useEffect(() => {
     fetchSlides();
@@ -134,11 +142,6 @@ const Preview = ({ token }) => {
               return (
                 <TextElement
                   key={element.id}
-                  onDoubleClick={() => handleElementEdit(element)}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    handleElementDelete(element);
-                  }}
                   sx={{
                     ...commonStyles,
                     fontSize: `${element.size}em`,
@@ -158,11 +161,6 @@ const Preview = ({ token }) => {
             return element.type === "text" ? (
               <TextElement
                 key={element.id}
-                onDoubleClick={() => handleElementEdit(element)}
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                  handleElementDelete(element);
-                }}
                 sx={{
                   ...commonStyles,
                   fontSize: `${element.size}em`,
@@ -175,14 +173,10 @@ const Preview = ({ token }) => {
             ) : element.type === "image" ? (
               <TextElement
                 key={element.id}
-                onDoubleClick={() => handleElementEdit(element)}
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                  handleElementDelete(element);
-                }}
                 sx={commonStyles}
               >
-                <img
+                <Box
+                  component="img"
                   src={element.url}
                   alt={element.description}
                   sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -192,11 +186,6 @@ const Preview = ({ token }) => {
             ) : element.type === "video" ? (
               <TextElement
                 key={element.id}
-                onDoubleClick={() => handleElementEdit(element)}
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                  handleElementDelete(element);
-                }}
                 sx={commonStyles}
               >
                 <iframe
@@ -223,6 +212,8 @@ const Preview = ({ token }) => {
           </SlideNumber>
         </FullScreenContainer>
       )}
+      <ErrorPopUp isOpen={isErrorOpen} onClose={handleCloseError} message = {errorMsg}>
+      </ErrorPopUp>
     </>
   );
 };

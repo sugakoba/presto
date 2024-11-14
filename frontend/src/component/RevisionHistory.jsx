@@ -1,10 +1,9 @@
-import React from 'react';
 import { Modal, Box, Button, Typography, List, ListItem, ListItemText, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
 import RestorePageIcon from '@mui/icons-material/RestorePage';
 
-const RestoreButton = styled(Button)(({ theme }) => ({
+const RestoreButton = styled(Button)(() => ({
   borderColor: '#C46243',
   color: '#C46243',
   boxShadow: 'none',
