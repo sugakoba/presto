@@ -14,22 +14,22 @@ const OutButton = styled(Button) `
 
 const LogoutButton = ({ token, setToken }) => {
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const logout = () => {
-        axios.post('http://localhost:5005/admin/auth/logout', {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-        .then(function (response) {
-          localStorage.removeItem('token');
-          setToken(null);
-          navigate('/login');
-        })
-        .catch(function (error) {
-        });
-      }
+  const logout = () => {
+    axios.post('http://localhost:5005/admin/auth/logout', {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then((response) => {
+        localStorage.removeItem('token');
+        setToken(null);
+        navigate('/login');
+      })
+      .catch((error) => {
+      });
+  }
     
-    return <OutButton onClick={logout}>Logout</OutButton>;
+  return <OutButton onClick={logout}>Logout</OutButton>;
 
 }
 
