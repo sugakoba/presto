@@ -617,3 +617,111 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
               color="primary"
             />
           </div>
+          <AddElementInput 
+            required
+            value={String(selectedElement?.xpos) || ''}
+            onChange={(e) => handleElementChange('xpos', e.target.value)}
+            label="Edit X-coordinate"
+            variant="outlined"
+            margin="normal"
+          />
+          <AddElementInput 
+            required
+            value={String(selectedElement?.ypos) || ''}
+            onChange={(e) => handleElementChange('ypos', e.target.value)}
+            label="Edit Y-coordinate"
+            variant="outlined"
+            margin="normal"
+          />
+          <div>
+            <SaveButton variant="contained" onClick={handleElementSave} startIcon={<CheckIcon />}>
+                            Save
+            </SaveButton>
+            <CancelButton variant="outlined" onClick={handleCloseVideoModal} startIcon={<CloseIcon />}>
+                            Cancel
+            </CancelButton>
+          </div>
+                        
+        </AddElementContainer>
+      </Modal>
+
+            
+      <Modal open={isCodeEditModalOpen} onClose={handleCloseTextEdit}>
+        <AddElementContainer>
+          <AddElementTitle variant="h5" component="h2">
+                        Edit Code Block
+          </AddElementTitle>
+          <AddElementInput
+            required
+            value={selectedElement.height}
+            onChange={(e) => handleElementChange('height', e.target.value)}
+            label="Edit Code Block Height"
+            variant="outlined"
+            margin="normal"
+          />
+          <AddElementInput
+            required
+            value={selectedElement.width}
+            onChange={(e) => handleElementChange('width', e.target.value)}
+            label="Edit Code Block Width"
+            variant="outlined"
+            margin="normal"
+          />
+
+          <AddElementInput 
+            required
+            value={selectedElement.size}
+            onChange={(e) => handleElementChange('size', e.target.value)}
+            label="Edit Code Size in em"
+            variant="outlined"
+            margin="normal"
+          />
+
+          <AddElementInput
+            required
+            value={selectedElement.code}
+            onChange={(e) => handleElementChange('code', e.target.value)}
+            label="Edit Code Block"
+            variant="outlined"
+            margin="normal"
+            multiline
+            minRows={4}
+            fullWidth
+
+          />
+
+          <AddElementInput 
+            required
+            value={String(selectedElement?.xpos) || ''}
+            onChange={(e) => handleElementChange('xpos', e.target.value)}
+            label="Edit X-coordinate"
+            variant="outlined"
+            margin="normal"
+          />
+          <AddElementInput 
+            required
+            value={String(selectedElement?.ypos) || ''}
+            onChange={(e) => handleElementChange('ypos', e.target.value)}
+            label="Edit Y-coordinate"
+            variant="outlined"
+            margin="normal"
+          />
+
+          <div>
+            <SaveButton variant="contained" onClick={handleElementSave} startIcon={<CheckIcon />}>
+                            Save
+            </SaveButton>
+            <CancelButton variant="outlined" onClick={handleCloseCodeModal} startIcon={<CloseIcon />}>
+                            Cancel
+            </CancelButton>
+          </div>
+                    
+        </AddElementContainer>
+      </Modal>
+        
+        
+    </>
+  );
+};
+
+export default Slide;
