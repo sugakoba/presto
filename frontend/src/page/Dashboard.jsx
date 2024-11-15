@@ -240,7 +240,7 @@ function Dashboard({ token }) {
             <Typography variant="h4" sx={{ mb: 2, fontSize: { xs: '1.6rem' } }}>
                             Presentations
             </Typography>
-            <CreateButton variant="contained" onClick={handleOpenModal} startIcon={<AddIcon />} sx={{ mb: 2, ml: 2 }}>
+            <CreateButton aria-label="create-presentation" variant="contained" onClick={handleOpenModal} startIcon={<AddIcon />} sx={{ mb: 2, ml: 2 }}>
                             New Presentation
             </CreateButton>
           </Box>

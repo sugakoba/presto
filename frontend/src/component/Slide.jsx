@@ -727,8 +727,6 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
                     
         </AddElementContainer>
       </Modal>
-        
-        
     </>
   );
 };

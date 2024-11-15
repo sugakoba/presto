@@ -645,7 +645,7 @@ function Presentation({ token }) {
         })
       }
     } catch (error) {
-      setErrorMsg(error.response.data.error);
+      setErrorMsg(error);
       setErrorOpen(true);
     }
   };
@@ -729,6 +729,7 @@ function Presentation({ token }) {
     <>
       <PresentationContainer>
         <IconButton 
+          aria-label="menu"
           onClick={toggleDrawer(true)} 
           sx={{
             position: 'absolute',
@@ -828,7 +829,7 @@ function Presentation({ token }) {
             <SaveButton aria-label="rearrange-slides" variant="contained" onClick={toggleRearrangeScreen} startIcon={<CompareArrowsIcon />}>
                             Rearrange Slides
             </SaveButton>
-            <SaveButton aria-label="rearrange-slides" variant="contained" onClick={toggleRevisionHistory} startIcon={<HistoryIcon />}>
+            <SaveButton aria-label="version-history" variant="contained" onClick={toggleRevisionHistory} startIcon={<HistoryIcon />}>
                             Version History
             </SaveButton>
             <SaveButton aria-label="presentation-preview" variant="contained" onClick={openPreview} startIcon={<SlideshowIcon />}>
