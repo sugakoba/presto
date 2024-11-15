@@ -127,7 +127,6 @@ const Preview = ({ token }) => {
             background: currentSlide.backgroundStyle.includes('url(') ? `center / cover no-repeat ${currentSlide.backgroundStyle}` : currentSlide.backgroundStyle
           }}
         >
-          {/* to modify after 2.3 has been setup */}
           {currentSlide.elements.map((element) => {
             const commonStyles = {
               top: `${element.ypos}%`,

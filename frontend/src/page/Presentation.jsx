@@ -192,6 +192,7 @@ function Presentation({ token }) {
   const [newTitle, setNewTitle] = useState(title);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAnyModalOpen, setIsAnyModalOpen] = useState(false);
   const [isTextModalOpen, setIsTextModalOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -352,14 +353,7 @@ function Presentation({ token }) {
     setPresentation(updatedPresentation);
     updatePresentationBackend(updatedPresentation);
   };
-
-  /*********************************
-    **********************************
-    **** Change Slide layout here ****
-    **********************************
-    **********************************/
-
-    
+ 
   const handleNewText = async () => {
     let elementLength = presentation.slides[currentSlideIndex].elements.length;
 
@@ -691,6 +685,17 @@ function Presentation({ token }) {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
+      if (isModalOpen) return;
+      if (isTextModalOpen) return;
+      if (isImageModalOpen) return;
+      if (isCodeModalOpen) return;
+      if (isVideoModalOpen) return;
+      if (isDrawerOpen) return;
+      if (isRevisionHistoryOpen) return;
+      if (isRearrangeOpen) return;
+
+      if (isAnyModalOpen) return;
+      
       if (event.key === 'ArrowRight') {
         handleNextSlide();
       } else if (event.key === 'ArrowLeft') {
@@ -698,11 +703,11 @@ function Presentation({ token }) {
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [currentSlideIndex, presentation.slides]);
+  }, [currentSlideIndex, presentation.slides, isModalOpen, isCodeModalOpen, isTextModalOpen, isRevisionHistoryOpen, isRearrangeOpen, isAnyModalOpen]);
 
   useEffect(() => {
     fetchPresentationInfo();
@@ -1173,6 +1178,7 @@ function Presentation({ token }) {
                   slides={presentation.slides} 
                   presentation={presentation}
                   updatePresentationBackend={updatePresentationBackend}
+                  setIsAnyModalOpen={setIsAnyModalOpen}
                   setPresentation={setPresentation} />
               )}
               {presentation.slides && presentation.slides.length >= 2 && (

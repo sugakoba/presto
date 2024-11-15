@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Typography, IconButton, Modal, TextField, Button, Radio, RadioGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import BackgroundPicker from './BackgroundPicker';
@@ -104,7 +104,7 @@ const CancelButton = styled(Button)`
 `;
 
 
-const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentationBackend, setPresentation }) => {
+const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentationBackend, setPresentation, setIsAnyModalOpen }) => {
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const currentSlide = slides[currentSlideIndex];
   const [isTextEditModalOpen, setTextEditModalOpen] = useState(false);
@@ -113,8 +113,8 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
   const [isImageEditModalOpen, setImageEditModalOpen] = useState(false);
   const [isVideoEditModalOpen, setVideoEditModalOpen] = useState(false);
   const [isCodeEditModalOpen, setCodeEditModalOpen] = useState(false);
-  const [selectedElement, setSelectedElement] = useState({});
 
+  const [selectedElement, setSelectedElement] = useState({});
   const [imageInputType, setImageInputType] = useState('url');
 
   const handleOpenPicker = () => {
@@ -259,6 +259,17 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
     setPresentation(updatedPresentation);
   };
 
+  const updateAnyModalOpenStatus = () => {
+    setIsAnyModalOpen(
+      isTextEditModalOpen || isFontModalOpen || isImageEditModalOpen || isVideoEditModalOpen || isCodeEditModalOpen
+    );
+  };
+
+  useEffect(() => {
+    updateAnyModalOpenStatus();
+  }, [isTextEditModalOpen, isFontModalOpen, isImageEditModalOpen, isVideoEditModalOpen, isCodeEditModalOpen]);
+
+
   return (
     <>
       <SlideBox 
@@ -319,7 +330,6 @@ const Slide = ({ fade, currentSlideIndex, slides, presentation, updatePresentati
           </Box>
         </Modal>
 
-        {/* Edit below is required */}
         {currentSlide.elements.map((element) => {
           const commonStyles = {
             top: `${element.ypos}%`,
