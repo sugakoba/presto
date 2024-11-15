@@ -29,6 +29,8 @@ Color picker panel is available for users to choose from a large variety of colo
 
 Both image upload and url is available for adding images to slides.
 
+Upon successfully uploading thumbnail and background image shows a message "image uploaded".
+
 When there are no presentations on dashboard, a message will be shown for users to create one. When slides are not fully loaded onto the page, there is a message showing "loading slides".
 
 Affordance:
@@ -64,6 +66,8 @@ click on the previous slide button as you don't have a previous slide.
 If you only have one slide, you can't delete that slide. 
 
 If the use is not logged in, then they can't create slides. 
+
+Left and right arrow keys will not change slides when a modal is open.
 
 Efficiency:
 Our website is very minmal and straight forward. User can easily find the action they can
