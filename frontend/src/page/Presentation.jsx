@@ -645,7 +645,7 @@ function Presentation({ token }) {
         })
       }
     } catch (error) {
-      setErrorMsg(error);
+      setErrorMsg(error.response.data.error);
       setErrorOpen(true);
     }
   };
