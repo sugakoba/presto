@@ -181,10 +181,6 @@ function Dashboard({ token }) {
       newId = presentations[presentations.length - 1].id + 1;
     }
     if (newPresentationName.trim() !== '') {
-      /*********************************
-             * Automatically creates 1 slide *
-            **** Change Slide layout here ****
-            **********************************/
       const newPresentation = {
         id: newId,
         description: newDescription,
