@@ -111,8 +111,6 @@ const port = USE_VERCEL_KV
   ? PROD_BACKEND_PORT
   : JSON.parse(fs.readFileSync("../frontend/backend.config.json")).BACKEND_PORT;
 
-// app.listen(port, () => {
-//   console.log(`For API docs, navigate to http://localhost:${port}`);
-// });
-
-export default app;
+app.listen(port, () => {
+  console.log(`For API docs, navigate to http://localhost:${port}`);
+});
